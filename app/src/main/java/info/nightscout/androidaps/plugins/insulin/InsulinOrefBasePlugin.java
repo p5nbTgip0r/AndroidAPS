@@ -20,7 +20,7 @@ import info.nightscout.androidaps.plugins.treatments.Treatment;
 
 public abstract class InsulinOrefBasePlugin extends PluginBase implements InsulinInterface {
 
-    public static double MIN_DIA = 5;
+    public static double MIN_DIA = 2;
 
     long lastWarned = 0;
 
