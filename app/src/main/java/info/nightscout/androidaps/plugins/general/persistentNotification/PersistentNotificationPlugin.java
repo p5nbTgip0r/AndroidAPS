@@ -223,6 +223,7 @@ public class PersistentNotificationPlugin extends PluginBase {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(MainApp.instance(), CHANNEL_ID);
         builder.setOngoing(true);
         builder.setOnlyAlertOnce(true);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         builder.setCategory(NotificationCompat.CATEGORY_STATUS);
         builder.setSmallIcon(MainApp.getNotificationIcon());
         Bitmap largeIcon = BitmapFactory.decodeResource(MainApp.instance().getResources(), MainApp.getIcon());
