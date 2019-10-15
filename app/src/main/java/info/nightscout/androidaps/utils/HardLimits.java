@@ -27,9 +27,9 @@ public class HardLimits {
     public static final int[] VERY_HARD_LIMIT_MAX_BG = {85, 270};
     public static final int[] VERY_HARD_LIMIT_TARGET_BG = {80, 200};
     // Very Hard Limits Ranges for Temp Targets
-    public static final int[] VERY_HARD_LIMIT_TEMP_MIN_BG = {72, 180};
+    public static final int[] VERY_HARD_LIMIT_TEMP_MIN_BG = {72, 270};
     public static final int[] VERY_HARD_LIMIT_TEMP_MAX_BG = {72, 270};
-    public static final int[] VERY_HARD_LIMIT_TEMP_TARGET_BG = {72, 200};
+    public static final int[] VERY_HARD_LIMIT_TEMP_TARGET_BG = {72, 270};
 
     public static final double MINDIA = 2;
     public static final double MAXDIA = 7;
