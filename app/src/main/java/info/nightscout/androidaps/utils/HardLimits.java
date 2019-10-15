@@ -24,7 +24,7 @@ public class HardLimits {
     // Very Hard Limits Ranges
     // First value is the Lowest and second value is the Highest a Limit can define
     public static final int[] VERY_HARD_LIMIT_MIN_BG = {72, 180};
-    public static final int[] VERY_HARD_LIMIT_MAX_BG = {90, 270};
+    public static final int[] VERY_HARD_LIMIT_MAX_BG = {85, 270};
     public static final int[] VERY_HARD_LIMIT_TARGET_BG = {80, 200};
     // Very Hard Limits Ranges for Temp Targets
     public static final int[] VERY_HARD_LIMIT_TEMP_MIN_BG = {72, 180};
@@ -38,10 +38,10 @@ public class HardLimits {
     public static final double MAXIC = 100;
 
     public static final double MINISF = 2; // mgdl
-    public static final double MAXISF = 720; // mgdl
+    public static final double MAXISF = 1620; // mgdl
 
     public static final double[] MAXIOB_AMA = {3, 5, 7, 12};
-    public static final double[] MAXIOB_SMB = {3, 7, 12, 25};
+    public static final double[] MAXIOB_SMB = {3, 7, 12, 80};
 
     public static final double[] MAXBASAL = {2, 5, 10, 12};
 
