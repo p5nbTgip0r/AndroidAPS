@@ -232,10 +232,10 @@ public class PersistentNotificationPlugin extends PluginBase {
         if (line2 != null) builder.setContentText(line2);
         if (line3 != null) builder.setSubText(line3);
         /// Android Auto
-        if (unreadConversationBuilder != null) {
+        /*if (unreadConversationBuilder != null) {
             builder.extend(new NotificationCompat.CarExtender()
                     .setUnreadConversation(unreadConversationBuilder.build()));
-        }
+        }*/
         /// End Android Auto
 
 
