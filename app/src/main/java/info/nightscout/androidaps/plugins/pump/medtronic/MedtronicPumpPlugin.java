@@ -793,14 +793,14 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
         MedtronicPumpStatus mdtPumpStatus = getMDTPumpStatus();
 
-        if (detailedBolusInfo.insulin > mdtPumpStatus.reservoirRemainingUnits) {
+        /*if (detailedBolusInfo.insulin > mdtPumpStatus.reservoirRemainingUnits) {
             return new PumpEnactResult() //
                     .success(false) //
                     .enacted(false) //
                     .comment(MainApp.gs(R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
                             mdtPumpStatus.reservoirRemainingUnits,
                             detailedBolusInfo.insulin));
-        }
+        }*/
 
         bolusDeliveryType = BolusDeliveryType.DeliveryPrepared;
 
