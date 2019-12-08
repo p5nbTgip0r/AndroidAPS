@@ -143,7 +143,7 @@
     <string name="profileswitch_basalhigher">Basalen zullen 10% hoger zijn.</string>
     <string name="profileswitch_basallower">Basalen zullen 10% lager zijn.</string>
     <string name="profileswitch_ichigher">De KH ratio wordt 10% hoger.</string>
-    <string name="profileswitch_iclower">De KH ratio wordt 10% hoger.</string>
+    <string name="profileswitch_iclower">De KH ratio wordt 10% lager.</string>
     <string name="profileswitch_isfhigher">ISF-waarde wordt 10% hoger.</string>
     <string name="profileswitch_isflower">ISF-waarde wordt 10% lager.</string>
     <string name="profileswitch_overall">In totaal zul je ongeveer 10% minder insuline krijgen.</string>
@@ -163,4 +163,7 @@
     <string name="basalhelp_diabetesteam">Jouw behandelaars</string>
     <string name="basalhelp_google">Google</string>
     <string name="basalhelp_facebook">Facebook</string>
+    <string name="other_medication_label">Andere medicatie</string>
+    <string name="other_medication_text">AAPS vermindert BR om bloedsuiker te verhogen. Geneesmiddelen van de groep SGLT2-remmers (gliflozins) kunnen de verwachte toename in BG voorkomen en kunnen dus een gevaarlijk insulinekort (DKA) veroorzaken.
+\nGemeenschappelijke merknamen zijn: Invokana ®, Forxiga ®, Jardiance ®, Steglatro ®, Suglat ®, Apleway ®, Deberza ®, Synjardy ®, Vokanamet ®, Xigduo ®.\n\nIk beloof hierbij dat ik dergelijke geneesmiddelen niet zal nemen wanneer ik AAPS gebruik of de lus zal deactiveren voordat ik deze medicijnen gebruik.</string>
 </resources>
