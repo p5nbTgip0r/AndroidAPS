@@ -23,6 +23,7 @@ import info.nightscout.androidaps.data.Profile;
 import info.nightscout.androidaps.db.BgReading;
 import info.nightscout.androidaps.db.TempTarget;
 import info.nightscout.androidaps.events.Event;
+import info.nightscout.androidaps.interfaces.Constraint;
 import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.aps.openAPSSMB.SMBDefaults;
 import info.nightscout.androidaps.plugins.bus.RxBus;
@@ -32,6 +33,7 @@ import info.nightscout.androidaps.plugins.general.overview.events.EventNewNotifi
 import info.nightscout.androidaps.plugins.general.overview.notifications.Notification;
 import info.nightscout.androidaps.plugins.iob.iobCobCalculator.events.EventAutosensCalculationFinished;
 import info.nightscout.androidaps.plugins.iob.iobCobCalculator.events.EventIobCalculationProgress;
+import info.nightscout.androidaps.plugins.sensitivity.SensitivityOref1Plugin;
 import info.nightscout.androidaps.plugins.treatments.Treatment;
 import info.nightscout.androidaps.plugins.treatments.TreatmentsPlugin;
 import info.nightscout.androidaps.utils.DateUtil;
@@ -318,7 +320,10 @@ public class IobCobOref1Thread extends Thread {
                         double currentBasal = profile.getBasal(bgTime);
                         // always exclude the first 45m after each carb entry
                         //if (iob.iob > currentBasal || uam ) {
-                        if (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9) {
+                        Constraint<Boolean> uam = new Constraint<>(true);
+                        MainApp.getConstraintChecker().isUAMEnabled(uam);
+                        if ((iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9)
+                            && uam.value()) {
                             autosensData.mealStartCounter++;
                             if (deviation > 0)
                                 autosensData.uam = true;
