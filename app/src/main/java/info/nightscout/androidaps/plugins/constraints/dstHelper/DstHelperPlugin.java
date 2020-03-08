@@ -59,32 +59,32 @@ public class DstHelperPlugin extends PluginBase implements ConstraintsInterface 
     @Override
     public Constraint<Boolean> isLoopInvocationAllowed(Constraint<Boolean> value) {
 
-        PumpInterface pump = ConfigBuilderPlugin.getPlugin().getActivePump();
-        if (pump == null || pump.canHandleDST()) {
-            log.debug("Pump can handle DST");
-            return value;
-        }
-
-        Calendar cal = Calendar.getInstance();
-
-        if (willBeDST(cal)) {
-            warnUser(Notification.DST_IN_24H, MainApp.gs(R.string.dst_in_24h_warning));
-        }
-
-        if (!value.value()) {
-            log.debug("Already not allowed - don't check further");
-            return value;
-        }
-
-        if (wasDST(cal)) {
-            LoopPlugin loopPlugin = LoopPlugin.getPlugin();
-            if (!loopPlugin.isSuspended()) {
-                warnUser(Notification.DST_LOOP_DISABLED, MainApp.gs(R.string.dst_loop_disabled_warning));
-            } else {
-                log.debug("Loop already suspended");
-            }
-            value.set(false, "DST in last 3 hours.", this);
-        }
+//        PumpInterface pump = ConfigBuilderPlugin.getPlugin().getActivePump();
+//        if (pump == null || pump.canHandleDST()) {
+//            log.debug("Pump can handle DST");
+//            return value;
+//        }
+//
+//        Calendar cal = Calendar.getInstance();
+//
+//        if (willBeDST(cal)) {
+//            warnUser(Notification.DST_IN_24H, MainApp.gs(R.string.dst_in_24h_warning));
+//        }
+//
+//        if (!value.value()) {
+//            log.debug("Already not allowed - don't check further");
+//            return value;
+//        }
+//
+//        if (wasDST(cal)) {
+//            LoopPlugin loopPlugin = LoopPlugin.getPlugin();
+//            if (!loopPlugin.isSuspended()) {
+//                warnUser(Notification.DST_LOOP_DISABLED, MainApp.gs(R.string.dst_loop_disabled_warning));
+//            } else {
+//                log.debug("Loop already suspended");
+//            }
+//            value.set(false, "DST in last 3 hours.", this);
+//        }
         return value;
     }
 
