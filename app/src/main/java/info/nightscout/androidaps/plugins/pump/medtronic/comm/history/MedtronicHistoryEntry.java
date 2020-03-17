@@ -286,7 +286,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
 
 
     public void setAtechDateTime(long dt) {
-        // pump history entry represented as UTC
+        /*// pump history entry represented as UTC
         DateTime entryUTC = DateTimeUtil.toLocalDateTime(dt)
                 .toDateTime(DateTimeZone.UTC);
 
@@ -297,7 +297,8 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         LocalDateTime entryLocalTime = entryUTC.withZone(phoneTimeZone)
                 .toLocalDateTime();
 
-        this.atechDateTime = DateTimeUtil.toATechDate(entryLocalTime);
+        this.atechDateTime = DateTimeUtil.toATechDate(entryLocalTime);*/
+        this.atechDateTime = dt;
         this.DT = DateTimeUtil.toString(this.atechDateTime);
     }
 

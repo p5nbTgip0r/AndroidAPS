@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import info.nightscout.androidaps.logging.L;
 
@@ -81,7 +82,9 @@ public class DateTimeUtil {
         int second = (int) atechDateTime;
 
         try {
-            return new GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second);
+            GregorianCalendar calendar = new GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second);
+            calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return calendar;
         } catch (Exception ex) {
             if (L.isEnabled(L.PUMPCOMM))
                 LOG.error("DateTimeUtil", String.format("Error creating GregorianCalendar from values [atechDateTime=%d, year=%d, month=%d, day=%d, hour=%d, minute=%d, second=%d]", atechDateTime, year, month, dayOfMonth, hourOfDay, minute, second));
