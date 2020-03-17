@@ -2,12 +2,16 @@ package info.nightscout.androidaps.plugins.pump.medtronic.comm.history;
 
 import com.google.gson.annotations.Expose;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
@@ -282,7 +286,18 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
 
 
     public void setAtechDateTime(long dt) {
-        this.atechDateTime = dt;
+        // pump history entry represented as UTC
+        DateTime entryUTC = DateTimeUtil.toLocalDateTime(dt)
+                .toDateTime(DateTimeZone.UTC);
+
+        // phone's current timezone
+        DateTimeZone phoneTimeZone = DateTimeZone.forTimeZone(TimeZone.getDefault());
+
+        // pump history entry in local time
+        LocalDateTime entryLocalTime = entryUTC.withZone(phoneTimeZone)
+                .toLocalDateTime();
+
+        this.atechDateTime = DateTimeUtil.toATechDate(entryLocalTime);
         this.DT = DateTimeUtil.toString(this.atechDateTime);
     }
 

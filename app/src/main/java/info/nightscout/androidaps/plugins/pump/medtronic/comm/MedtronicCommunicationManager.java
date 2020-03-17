@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import info.nightscout.androidaps.logging.L;
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkCommunicationManager;
@@ -852,8 +853,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
 
     public Boolean setPumpTime() {
-
-        GregorianCalendar gc = new GregorianCalendar();
+        // set the calendar to UTC
+        GregorianCalendar gc = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         gc.add(Calendar.SECOND, 5);
 
         if (isLogEnabled())

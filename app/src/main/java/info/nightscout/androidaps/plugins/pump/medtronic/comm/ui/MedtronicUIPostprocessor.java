@@ -157,8 +157,9 @@ public class MedtronicUIPostprocessor {
 
         ClockDTO clockDTO = (ClockDTO) uiTask.returnData;
 
+        // device time is not in UTC, don't set it as so
         Duration dur = new Duration(clockDTO.pumpTime.toDateTime(DateTimeZone.UTC),
-                clockDTO.localDeviceTime.toDateTime(DateTimeZone.UTC));
+                clockDTO.localDeviceTime.toDateTime());
 
         clockDTO.timeDifference = (int) dur.getStandardSeconds();
 
