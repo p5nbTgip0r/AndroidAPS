@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Map;
 
 import info.nightscout.androidaps.logging.L;
+import info.nightscout.androidaps.plugins.pump.medtronic.MedtronicPumpPlugin;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.pump.medtronic.data.dto.ClockDTO;
@@ -48,7 +49,8 @@ public class MedtronicUIPostprocessor {
 
                 if (response) {
                     BasalProfile basalProfile = (BasalProfile) uiTask.getParameter(0);
-
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, basalProfile);
                     pumpStatus.basalsByHour = basalProfile.getProfilesByHour();
                 }
             }

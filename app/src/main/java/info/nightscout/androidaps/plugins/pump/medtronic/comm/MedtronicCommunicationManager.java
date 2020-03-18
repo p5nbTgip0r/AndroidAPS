@@ -27,6 +27,7 @@ import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks
 import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.WakeAndTuneTask;
 import info.nightscout.androidaps.plugins.pump.common.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.pump.common.utils.DateTimeUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.MedtronicPumpPlugin;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.MedtronicPumpHistoryDecoder;
 import info.nightscout.androidaps.plugins.pump.medtronic.comm.history.pump.PumpHistoryEntry;
@@ -751,6 +752,12 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
                 BasalProfile basalProfile = (BasalProfile) medtronicConverter.convertResponse(commandType, data);
 
                 if (basalProfile != null) {
+                    if (isLogEnabled())
+                        LOG.debug("Converted response for {} is {}.", commandType.name(), basalProfile);
+
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, basalProfile);
+
                     if (isLogEnabled())
                         LOG.debug("Converted response for {} is {}.", commandType.name(), basalProfile);
 
