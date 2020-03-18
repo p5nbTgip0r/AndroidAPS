@@ -3,7 +3,6 @@ package info.nightscout.androidaps.plugins.pump.medtronic;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -1545,12 +1545,10 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
             basalProfileEntries.add(basalEntry);
         }
 
-        // TODO fix for <N
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // sort the entries in ascending order
-            // this means 00:00 at the start and 23:00 at the end
-            basalProfileEntries.sort((e1, e2) -> e1.startTime.getHourOfDay() - e2.startTime.getHourOfDay());
-        }
+        // sort the entries in ascending order
+        // this means 00:00 at the start and 23:00 at the end
+        Collections.sort(basalProfileEntries,
+                (e1, e2) -> e1.startTime.getHourOfDay() - e2.startTime.getHourOfDay());
 
         for(BasalProfileEntry entry : basalProfileEntries) {
             LOG.debug("converted: {}: {}", entry.startTime, entry.rate);
