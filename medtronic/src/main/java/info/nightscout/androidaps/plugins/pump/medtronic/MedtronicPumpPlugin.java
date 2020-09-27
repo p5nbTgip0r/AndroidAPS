@@ -805,14 +805,14 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
         setRefreshButtonEnabled(false);
 
-        if (detailedBolusInfo.insulin > medtronicPumpStatus.reservoirRemainingUnits) {
-            return new PumpEnactResult(getInjector()) //
-                    .success(false) //
-                    .enacted(false) //
-                    .comment(getResourceHelper().gs(R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
-                            medtronicPumpStatus.reservoirRemainingUnits,
-                            detailedBolusInfo.insulin));
-        }
+//        if (detailedBolusInfo.insulin > medtronicPumpStatus.reservoirRemainingUnits) {
+//            return new PumpEnactResult(getInjector()) //
+//                    .success(false) //
+//                    .enacted(false) //
+//                    .comment(getResourceHelper().gs(R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
+//                            medtronicPumpStatus.reservoirRemainingUnits,
+//                            detailedBolusInfo.insulin));
+//        }
 
         bolusDeliveryType = BolusDeliveryType.DeliveryPrepared;
 
