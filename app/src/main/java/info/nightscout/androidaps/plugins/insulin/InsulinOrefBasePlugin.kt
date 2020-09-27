@@ -99,6 +99,6 @@ abstract class InsulinOrefBasePlugin(
     abstract fun commentStandardText(): String
 
     companion object {
-        const val MIN_DIA = 5.0
+        const val MIN_DIA = 2.0
     }
 }
