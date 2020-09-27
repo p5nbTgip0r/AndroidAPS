@@ -215,10 +215,10 @@ class PersistentNotificationPlugin @Inject constructor(
         if (line2 != null) builder.setContentText(line2)
         if (line3 != null) builder.setSubText(line3)
         /// Android Auto
-        if (unreadConversationBuilder != null) {
+        /*if (unreadConversationBuilder != null) {
             builder.extend(NotificationCompat.CarExtender()
                 .setUnreadConversation(unreadConversationBuilder.build()))
-        }
+        }*/
         /// End Android Auto
         val resultIntent = Intent(context, MainActivity::class.java)
         val stackBuilder = TaskStackBuilder.create(context)
