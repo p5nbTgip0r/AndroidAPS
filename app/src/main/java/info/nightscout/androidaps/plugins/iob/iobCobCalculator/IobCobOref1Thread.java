@@ -22,11 +22,13 @@ import info.nightscout.androidaps.db.BgReading;
 import info.nightscout.androidaps.db.TempTarget;
 import info.nightscout.androidaps.events.Event;
 import info.nightscout.androidaps.interfaces.ActivePluginProvider;
+import info.nightscout.androidaps.interfaces.Constraint;
 import info.nightscout.androidaps.logging.AAPSLogger;
 import info.nightscout.androidaps.logging.LTag;
 import info.nightscout.androidaps.plugins.aps.openAPSSMB.SMBDefaults;
 import info.nightscout.androidaps.plugins.bus.RxBusWrapper;
 import info.nightscout.androidaps.interfaces.ProfileFunction;
+import info.nightscout.androidaps.plugins.configBuilder.ConstraintChecker;
 import info.nightscout.androidaps.plugins.general.overview.events.EventNewNotification;
 import info.nightscout.androidaps.plugins.general.overview.notifications.Notification;
 import info.nightscout.androidaps.plugins.iob.iobCobCalculator.data.AutosensData;
@@ -70,6 +72,7 @@ public class IobCobOref1Thread extends Thread {
     @Inject Profiler profiler;
     @Inject FabricPrivacy fabricPrivacy;
     @Inject DateUtil dateUtil;
+    @Inject ConstraintChecker constraintChecker;
 
     private final HasAndroidInjector injector;
     private final IobCobCalculatorPlugin iobCobCalculatorPlugin; // cannot be injected : HistoryBrowser uses different instance
@@ -329,7 +332,7 @@ public class IobCobOref1Thread extends Thread {
                         // always exclude the first 45m after each carb entry
                         //if (iob.iob > currentBasal || uam ) {
                         Constraint<Boolean> uam = new Constraint<>(true);
-                        MainApp.getConstraintChecker().isUAMEnabled(uam);
+                        constraintChecker.isUAMEnabled(uam);
                         if ((iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9)
                             && uam.value()) {
                             autosensData.mealStartCounter++;
