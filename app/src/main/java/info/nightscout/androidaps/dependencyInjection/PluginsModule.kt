@@ -208,11 +208,11 @@ abstract class PluginsModule {
     @IntKey(265)
     abstract fun bindSafetyPlugin(plugin: SafetyPlugin): PluginBase
 
-    @Binds
-    @NotNSClient
-    @IntoMap
-    @IntKey(270)
-    abstract fun bindVersionCheckerPlugin(plugin: VersionCheckerPlugin): PluginBase
+    // @Binds
+    // @NotNSClient
+    // @IntoMap
+    // @IntKey(270)
+    // abstract fun bindVersionCheckerPlugin(plugin: VersionCheckerPlugin): PluginBase
 
     @Binds
     @NotNSClient
@@ -232,11 +232,11 @@ abstract class PluginsModule {
     @IntKey(300)
     abstract fun bindSignatureVerifierPlugin(plugin: SignatureVerifierPlugin): PluginBase
 
-    @Binds
-    @APS
-    @IntoMap
-    @IntKey(310)
-    abstract fun bindObjectivesPlugin(plugin: ObjectivesPlugin): PluginBase
+    // @Binds
+    // @APS
+    // @IntoMap
+    // @IntKey(310)
+    // abstract fun bindObjectivesPlugin(plugin: ObjectivesPlugin): PluginBase
 
     @Binds
     @AllConfigs
