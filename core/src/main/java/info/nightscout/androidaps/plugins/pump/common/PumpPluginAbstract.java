@@ -328,7 +328,11 @@ public abstract class PumpPluginAbstract extends PumpPluginBase implements PumpI
         JSONObject status = new JSONObject();
         JSONObject extended = new JSONObject();
         try {
-            battery.put("percent", getPumpStatusData().batteryRemaining);
+            if(getPumpStatusData().batteryVoltage != null) {
+                battery.put("voltage", getPumpStatusData().batteryVoltage);
+            } else {
+                battery.put("percent", getPumpStatusData().batteryRemaining);
+            }
             status.put("status", getPumpStatusData().pumpStatusType != null ? getPumpStatusData().pumpStatusType.getStatus() : "normal");
             extended.put("Version", version);
             try {
