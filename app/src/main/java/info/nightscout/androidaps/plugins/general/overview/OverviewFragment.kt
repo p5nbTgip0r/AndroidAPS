@@ -189,7 +189,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         overview_bggraph?.gridLabelRenderer?.gridColor = resourceHelper.gc(R.color.graphgrid)
         overview_bggraph?.gridLabelRenderer?.reloadStyles()
         overview_bggraph?.gridLabelRenderer?.labelVerticalWidth = axisWidth
-        overview_bggraph?.layoutParams?.height = resourceHelper.dpToPx(skinProvider.activeSkin().mainGraphHeight)
+        // overview_bggraph?.layoutParams?.height = resourceHelper.dpToPx(skinProvider.activeSkin().mainGraphHeight)
 
         carbAnimation = overview_carbs_icon?.background as AnimationDrawable?
         carbAnimation?.setEnterFadeDuration(1200)
