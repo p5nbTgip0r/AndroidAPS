@@ -7,10 +7,11 @@
     tools:context=".plugins.general.overview.OverviewFragment">
 
     <ScrollView
-        android:id="@+id/top_part_scrollbar"
+        android:id="@+id/overview_toppart_scrollbar"
+        android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/inner_layout"
