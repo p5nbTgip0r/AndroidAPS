@@ -57,7 +57,7 @@ fun generateDate(): String {
     return stringBuilder.toString()
 }
 
-fun isMaster(): Boolean = !Versions.appVersion.contains("-")
+fun isMaster(): Boolean = false
 
 fun gitAvailable(): Boolean {
     val stringBuilder: StringBuilder = StringBuilder()
