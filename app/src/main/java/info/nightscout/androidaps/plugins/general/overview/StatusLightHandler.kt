@@ -1,7 +1,9 @@
 package info.nightscout.androidaps.plugins.general.overview
 
+import android.annotation.SuppressLint
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.core.view.isInvisible
 import info.nightscout.androidaps.Config
 import info.nightscout.androidaps.MainApp
 import info.nightscout.androidaps.R
@@ -12,6 +14,7 @@ import info.nightscout.androidaps.utils.DecimalFormatter
 import info.nightscout.androidaps.utils.WarnColors
 import info.nightscout.androidaps.utils.resources.ResourceHelper
 import info.nightscout.androidaps.utils.sharedPreferences.SP
+import java.lang.StringBuilder
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,8 +30,18 @@ class StatusLightHandler @Inject constructor(
     /**
      * applies the extended statusLight subview on the overview fragment
      */
-    fun updateStatusLights(careportal_canulaage: TextView?, careportal_insulinage: TextView?, careportal_reservoirlevel: TextView?, careportal_sensorage: TextView?, careportal_pbage: TextView?, careportal_batterylevel: TextView?) {
+    fun updateStatusLights(
+        careportal_canulaage: TextView?,
+        careportal_insulinage: TextView?,
+        careportal_reservoirlevel: TextView?,
+        careportal_sensorage: TextView?,
+        careportal_pbage: TextView?,
+        careportal_batterylevel: TextView?,
+        addPrefix: Boolean = false
+    ) {
         val pump = activePlugin.activePump
+        val textViews = listOf(careportal_canulaage, careportal_insulinage, careportal_reservoirlevel, careportal_sensorage, careportal_pbage, careportal_batterylevel)
+
         handleAge(careportal_canulaage, CareportalEvent.SITECHANGE, R.string.key_statuslights_cage_warning, 48.0, R.string.key_statuslights_cage_critical, 72.0)
         handleAge(careportal_insulinage, CareportalEvent.INSULINCHANGE, R.string.key_statuslights_iage_warning, 72.0, R.string.key_statuslights_iage_critical, 144.0)
         handleAge(careportal_sensorage, CareportalEvent.SENSORCHANGE, R.string.key_statuslights_sage_warning, 216.0, R.string.key_statuslights_sage_critical, 240.0)
@@ -37,12 +50,41 @@ class StatusLightHandler @Inject constructor(
             handleLevel(careportal_reservoirlevel, R.string.key_statuslights_res_critical, 10.0, R.string.key_statuslights_res_warning, 80.0, pump.reservoirLevel, "U")
         if (!config.NSCLIENT && pump.model() != PumpType.AccuChekCombo)
             handleLevel(careportal_batterylevel, R.string.key_statuslights_bat_critical, 26.0, R.string.key_statuslights_bat_warning, 51.0, pump.batteryLevel.toDouble(), "%")
+
+        if (addPrefix) {
+            textViews.forEach {
+                if (it == null)
+                    return@forEach
+
+                val prefix = when (it) {
+                    careportal_canulaage      -> "CAN"
+                    careportal_insulinage     -> "INS"
+                    careportal_reservoirlevel -> {
+                        if (config.NSCLIENT)
+                            return@forEach
+                        "RES"
+                    }
+                    careportal_sensorage      -> "SEN"
+                    careportal_pbage          -> "PBAGE"
+                    careportal_batterylevel   -> {
+                        if (config.NSCLIENT || pump.model() == PumpType.AccuChekCombo)
+                            return@forEach
+                        "BAT"
+                    }
+                    else                      -> "?"
+                } + " "
+
+                @SuppressLint("SetTextI18n")
+                it.text = prefix + it.text
+            }
+        }
     }
 
     private fun handleAge(view: TextView?, eventName: String, @StringRes warnSettings: Int, defaultWarnThreshold: Double, @StringRes urgentSettings: Int, defaultUrgentThreshold: Double) {
         val warn = sp.getDouble(warnSettings, defaultWarnThreshold)
         val urgent = sp.getDouble(urgentSettings, defaultUrgentThreshold)
         val careportalEvent = MainApp.getDbHelper().getLastCareportalEvent(eventName)
+
         if (careportalEvent != null) {
             warnColors.setColorByAge(view, careportalEvent, warn, urgent)
             view?.text = careportalEvent.age(resourceHelper.shortTextMode(), resourceHelper)
@@ -54,6 +96,7 @@ class StatusLightHandler @Inject constructor(
     private fun handleLevel(view: TextView?, criticalSetting: Int, criticalDefaultValue: Double, warnSetting: Int, warnDefaultValue: Double, level: Double, units: String) {
         val resUrgent = sp.getDouble(criticalSetting, criticalDefaultValue)
         val resWarn = sp.getDouble(warnSetting, warnDefaultValue)
+
         @Suppress("SetTextI18n")
         view?.text = " " + DecimalFormatter.to0Decimal(level) + units
         warnColors.setColorInverse(view, level, resWarn, resUrgent)
