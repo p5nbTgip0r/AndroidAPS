@@ -32,7 +32,7 @@ public class HardLimits {
     public static final int[] VERY_HARD_LIMIT_TEMP_TARGET_BG = {72, 270};
 
     public static final double MINDIA = 2;
-    public static final double MAXDIA = 7;
+    public static final double MAXDIA = 12;
 
     public static final double MINIC = 2;
     public static final double MAXIC = 100;
