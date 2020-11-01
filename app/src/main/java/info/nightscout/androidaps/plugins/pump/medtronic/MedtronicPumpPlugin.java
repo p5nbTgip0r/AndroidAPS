@@ -280,7 +280,7 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
     @Override
     public boolean canHandleDST() {
-        return false;
+        return true;
     }
 
 
