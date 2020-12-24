@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -715,7 +716,12 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
                 BasalProfile basalProfile = (BasalProfile) medtronicConverter.convertResponse(medtronicPumpPlugin.getPumpDescription().pumpType, commandType, data);
 
                 if (basalProfile != null) {
-                    aapsLogger.debug(LTag.PUMPCOMM, "Converted response for {} is {}.", commandType.name(), basalProfile);
+                    aapsLogger.debug(LTag.PUMPCOMM, "(pre-conversion) Converted response for {} is {}.", commandType.name(), basalProfile);
+
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile);
+
+                    aapsLogger.debug(LTag.PUMPCOMM, "(post-conversion) Converted response for {} is {}.", commandType.name(), basalProfile);
 
                     medtronicUtil.setCurrentCommand(null);
                     medtronicPumpStatus.setPumpDeviceState(PumpDeviceState.Sleeping);
@@ -815,7 +821,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     public Boolean setPumpTime() {
 
-        GregorianCalendar gc = new GregorianCalendar();
+        // set the calendar to UTC
+        GregorianCalendar gc = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         gc.add(Calendar.SECOND, 5);
 
         aapsLogger.info(LTag.PUMPCOMM, "setPumpTime: " + DateTimeUtil.toString(gc));

@@ -67,7 +67,8 @@ public class MedtronicUIPostprocessor {
 
                 if (response) {
                     BasalProfile basalProfile = (BasalProfile) uiTask.getParameter(0);
-
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile);
                     medtronicPumpStatus.basalsByHour = basalProfile.getProfilesByHour(medtronicPumpPlugin.getPumpDescription().pumpType);
                 }
             }
@@ -173,8 +174,9 @@ public class MedtronicUIPostprocessor {
 
         ClockDTO clockDTO = (ClockDTO) uiTask.returnData;
 
+        // device time is not in UTC, don't set it as so
         Duration dur = new Duration(clockDTO.pumpTime.toDateTime(DateTimeZone.UTC),
-                clockDTO.localDeviceTime.toDateTime(DateTimeZone.UTC));
+                clockDTO.localDeviceTime.toDateTime());
 
         clockDTO.timeDifference = (int) dur.getStandardSeconds();
 

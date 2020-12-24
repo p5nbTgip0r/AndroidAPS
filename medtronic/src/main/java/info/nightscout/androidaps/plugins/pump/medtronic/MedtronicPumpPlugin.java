@@ -12,11 +12,14 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -309,7 +313,7 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
     @Override
     public boolean canHandleDST() {
-        return false;
+        return true;
     }
 
 
@@ -1496,6 +1500,50 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
         return stringBuilder.length() == 0 ? null : stringBuilder.toString();
     }
 
+    /**
+     * Converts basal profile entries between UTC and local time.
+     *
+     * toUTC=true assumes the profile entries are set in local time and need to be converted to UTC
+     * toUTC=false assumes the profile entries are set in UTC and need to be converted to local time
+     *
+     * @param toUTC whether to convert to UTC or from UTC
+     * @param profile profile to convert
+     * @return time-converted profile
+     */
+    public static BasalProfile convertProfileTimes(AAPSLogger aapsLogger, boolean toUTC, PumpType pumpType, BasalProfile profile) {
+        BasalProfile converted = new BasalProfile(aapsLogger);
+        List<BasalProfileEntry> basalProfileEntries = new ArrayList<>();
+        int tzOffset = TimeZone.getDefault().getOffset(Instant.now().getMillis());
+
+        if (toUTC) {
+            // invert offset to shift times towards UTC instead of further away
+            tzOffset = -tzOffset;
+        }
+
+        for (BasalProfileEntry entry : profile.getEntries()) {
+            LocalTime newBasalTime = entry.startTime.plusMillis(tzOffset);
+
+            BasalProfileEntry basalEntry
+                    = new BasalProfileEntry(entry.rate, newBasalTime.getHourOfDay(), 0);
+            basalEntry.setRate(pumpType.determineCorrectBasalSize(entry.rate));
+            basalProfileEntries.add(basalEntry);
+            aapsLogger.debug(LTag.PUMP, "Created basal entry " + entry.startTime.hourOfDay().get() + " -> " + basalEntry.startTime.hourOfDay().get() + " - " + basalEntry.rate + " (" + tzOffset + ")");
+        }
+
+        // sort the entries in ascending order
+        // this means 00:00 at the start and 23:00 at the end
+        //noinspection Java8ListSort
+        Collections.sort(basalProfileEntries,
+                (e1, e2) -> e1.startTime.getHourOfDay() - e2.startTime.getHourOfDay());
+
+        for(BasalProfileEntry entry : basalProfileEntries) {
+            aapsLogger.debug(LTag.PUMP, "converted: {}: {}", entry.startTime, entry.rate);
+            converted.addEntry(entry);
+        }
+
+        converted.generateRawDataFromEntries();
+        return converted;
+    }
 
     @NonNull
     private BasalProfile convertProfileToMedtronicProfile(Profile profile) {
@@ -1514,6 +1562,8 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
         basalProfile.generateRawDataFromEntries();
 
+        // aaps profile -> pump profile, need UTC
+        basalProfile = convertProfileTimes(aapsLogger, true, pumpType, basalProfile);
         return basalProfile;
     }
 
