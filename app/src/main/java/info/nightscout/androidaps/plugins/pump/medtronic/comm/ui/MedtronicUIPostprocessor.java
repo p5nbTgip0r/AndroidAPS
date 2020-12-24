@@ -50,7 +50,7 @@ public class MedtronicUIPostprocessor {
                 if (response) {
                     BasalProfile basalProfile = (BasalProfile) uiTask.getParameter(0);
                     // pump profile -> aaps, need local time
-                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, basalProfile);
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, pumpStatus.pumpType, basalProfile);
                     pumpStatus.basalsByHour = basalProfile.getProfilesByHour();
                 }
             }

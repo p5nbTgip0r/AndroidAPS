@@ -1457,7 +1457,7 @@ public class MedtronicHistoryData {
                 LOG.debug("processLastBasalProfileChange. item found, setting new basalProfileLocally: " + newProfile);
             BasalProfile basalProfile = (BasalProfile) newProfile.getDecodedData().get("Object");
             // pump profile -> aaps, need local time
-            basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, basalProfile);
+            basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, mdtPumpStatus.pumpType, basalProfile);
             mdtPumpStatus.basalsByHour = basalProfile.getProfilesByHour();
         }
     }

@@ -756,7 +756,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
                         LOG.debug("Converted response for {} is {}.", commandType.name(), basalProfile);
 
                     // pump profile -> aaps, need local time
-                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, basalProfile);
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(false, pumpStatus.pumpType, basalProfile);
 
                     if (isLogEnabled())
                         LOG.debug("Converted response for {} is {}.", commandType.name(), basalProfile);

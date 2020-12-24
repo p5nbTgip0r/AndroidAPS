@@ -9,8 +9,12 @@ import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.MutableDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1522,27 +1526,24 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
      * @param profile profile to convert
      * @return time-converted profile
      */
-    public static BasalProfile convertProfileTimes(boolean toUTC, BasalProfile profile) {
+    public static BasalProfile convertProfileTimes(boolean toUTC, PumpType pumpType, BasalProfile profile) {
         BasalProfile converted = new BasalProfile();
         List<BasalProfileEntry> basalProfileEntries = new ArrayList<>();
-        DateTimeZone fromTZ, toTZ;
+        int tzOffset = TimeZone.getDefault().getOffset(Instant.now().getMillis());
 
         if (toUTC) {
-            fromTZ = DateTimeZone.forTimeZone(TimeZone.getDefault());
-            toTZ = DateTimeZone.UTC;
-        } else {
-            fromTZ = DateTimeZone.UTC;
-            toTZ = DateTimeZone.forTimeZone(TimeZone.getDefault());
+            // invert offset to shift times towards UTC instead of further away
+            tzOffset = -tzOffset;
         }
 
         for (BasalProfileEntry entry : profile.getEntries()) {
-            MutableDateTime basalHour = new MutableDateTime(fromTZ);
-            basalHour.setHourOfDay(entry.startTime.getHourOfDay());
+            LocalTime newBasalTime = entry.startTime.plusMillis(tzOffset);
 
-            BasalProfileEntry basalEntry = new BasalProfileEntry(entry.rate,
-                    basalHour.toDateTime(toTZ).getHourOfDay(), 0);
-            basalEntry.setRate(entry.rate);
+            BasalProfileEntry basalEntry
+                    = new BasalProfileEntry(entry.rate, newBasalTime.getHourOfDay(), 0);
+            basalEntry.setRate(pumpType.determineCorrectBasalSize(entry.rate));
             basalProfileEntries.add(basalEntry);
+            LOG.debug("Created basal entry " + entry.startTime.hourOfDay().get() + " -> " + basalEntry.startTime.hourOfDay().get() + " - " + basalEntry.rate + " (" + tzOffset + ")");
         }
 
         // sort the entries in ascending order
@@ -1580,7 +1581,7 @@ public class MedtronicPumpPlugin extends PumpPluginAbstract implements PumpInter
 
         basalProfile.generateRawDataFromEntries();
         // aaps profile -> pump profile, need UTC
-        basalProfile = convertProfileTimes(true, basalProfile);
+        basalProfile = convertProfileTimes(true, pumpType, basalProfile);
         return basalProfile;
     }
 
