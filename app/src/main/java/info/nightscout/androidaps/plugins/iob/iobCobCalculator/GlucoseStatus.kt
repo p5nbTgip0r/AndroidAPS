@@ -17,11 +17,11 @@ import java.util.ArrayList
  */
 class GlucoseStatus(injector: HasAndroidInjector) {
 
-    @JvmField @Inject
-    var aapsLogger: AAPSLogger? = null
+    @Inject
+    lateinit var aapsLogger: AAPSLogger
 
-    @JvmField @Inject
-    var iobCobCalculatorPlugin: IobCobCalculatorPlugin? = null
+    @Inject
+    lateinit var iobCobCalculatorPlugin: IobCobCalculatorPlugin
     private val injector: HasAndroidInjector
     @JvmField var glucose = 0.0
     @JvmField var noise = 0.0
@@ -39,35 +39,35 @@ class GlucoseStatus(injector: HasAndroidInjector) {
     }
 
     fun round(): GlucoseStatus {
-        glucose = Round.roundTo(glucose, 0.1)
-        noise = Round.roundTo(noise, 0.01)
-        delta = Round.roundTo(delta, 0.01)
-        avgdelta = Round.roundTo(avgdelta, 0.01)
-        short_avgdelta = Round.roundTo(short_avgdelta, 0.01)
-        long_avgdelta = Round.roundTo(long_avgdelta, 0.01)
-        return this
+        val glucoseStatus = GlucoseStatus(injector)
+        glucoseStatus.glucose = Round.roundTo(glucose, 0.1)
+        glucoseStatus.noise = Round.roundTo(noise, 0.01)
+        glucoseStatus.delta = Round.roundTo(delta, 0.01)
+        glucoseStatus.avgdelta = Round.roundTo(avgdelta, 0.01)
+        glucoseStatus.short_avgdelta = Round.roundTo(short_avgdelta, 0.01)
+        glucoseStatus.long_avgdelta = Round.roundTo(long_avgdelta, 0.01)
+        return glucoseStatus
     }
 
-    val glucoseStatusData: GlucoseStatus?
-        get() = getGlucoseStatusData(false)
+    fun getGlucoseStatusData(): GlucoseStatus? = getGlucoseStatusData(false)
 
     fun getGlucoseStatusData(allowOldData: Boolean): GlucoseStatus? {
         // load 45min
         //long fromtime = DateUtil.now() - 60 * 1000L * 45;
         //List<BgReading> data = MainApp.getDbHelper().getBgreadingsDataFromTime(fromtime, false);
-        synchronized(iobCobCalculatorPlugin!!.dataLock) {
-            val data = iobCobCalculatorPlugin!!.bgReadings
+        synchronized(iobCobCalculatorPlugin.dataLock) {
+            val data = iobCobCalculatorPlugin.bgReadings
             if (data == null) {
-                aapsLogger!!.debug(LTag.GLUCOSE, "data=null")
+                aapsLogger.debug(LTag.GLUCOSE, "data=null")
                 return null
             }
             val sizeRecords = data.size
             if (sizeRecords == 0) {
-                aapsLogger!!.debug(LTag.GLUCOSE, "sizeRecords==0")
+                aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==0")
                 return null
             }
             if (data[0].date < DateUtil.now() - 7 * 60 * 1000L && !allowOldData) {
-                aapsLogger!!.debug(LTag.GLUCOSE, "olddata")
+                aapsLogger.debug(LTag.GLUCOSE, "olddata")
                 return null
             }
             val now = data[0]
@@ -82,7 +82,7 @@ class GlucoseStatus(injector: HasAndroidInjector) {
                 status.long_avgdelta = 0.0
                 status.avgdelta = 0.0 // for OpenAPS MA
                 status.date = now_date
-                aapsLogger!!.debug(LTag.GLUCOSE, "sizeRecords==1")
+                aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==1")
                 return status.round()
             }
             val now_value_list = ArrayList<Double>()
@@ -97,12 +97,11 @@ class GlucoseStatus(injector: HasAndroidInjector) {
                     val then = data[i]
                     val then_date = then.date
                     var avgdelta: Double
-                    var minutesago: Long
-                    minutesago = Math.round((now_date - then_date) / (1000.0 * 60))
+                    val minutesago: Long = Math.round((now_date - then_date) / (1000.0 * 60))
                     // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
                     change = now.value - then.value
                     avgdelta = change / minutesago * 5
-                    aapsLogger!!.debug(LTag.GLUCOSE, "$then minutesago=$minutesago avgdelta=$avgdelta")
+                    aapsLogger.debug(LTag.GLUCOSE, "$then minutesago=$minutesago avgdelta=$avgdelta")
 
                     // use the average of all data points in the last 2.5m for all further "now" calculations
                     if (0 < minutesago && minutesago < 2.5) {
@@ -138,7 +137,7 @@ class GlucoseStatus(injector: HasAndroidInjector) {
             }
             status.long_avgdelta = average(long_deltas)
             status.avgdelta = status.short_avgdelta // for OpenAPS MA
-            aapsLogger!!.debug(LTag.GLUCOSE, status.log())
+            aapsLogger.debug(LTag.GLUCOSE, status.log())
             return status.round()
         }
     }

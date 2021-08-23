@@ -189,7 +189,7 @@ class BolusWizard @Inject constructor(
         }
 
         // Insulin from 15 min trend
-        glucoseStatus = GlucoseStatus(injector).glucoseStatusData
+        glucoseStatus = GlucoseStatus(injector).getGlucoseStatusData()
         glucoseStatus?.let {
             if (useTrend) {
                 trend = it.short_avgdelta

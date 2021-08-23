@@ -107,7 +107,7 @@ class QuickWizardEntry @Inject constructor(private val injector: HasAndroidInjec
         }
         if (loopPlugin.isEnabled(loopPlugin.getType()) && loopPlugin.isSuperBolus) superBolus = false
         // Trend
-        val glucoseStatus = GlucoseStatus(injector).glucoseStatusData
+        val glucoseStatus = GlucoseStatus(injector).getGlucoseStatusData()
         var trend = false
         if (useTrend() == YES) {
             trend = true

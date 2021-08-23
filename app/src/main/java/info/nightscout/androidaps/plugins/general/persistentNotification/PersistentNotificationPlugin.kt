@@ -133,7 +133,7 @@ class PersistentNotificationPlugin @Inject constructor(
             var line1aa: String
             val units = profileFunction.getUnits()
             val lastBG = iobCobCalculatorPlugin.lastBg()
-            val glucoseStatus = GlucoseStatus(injector).glucoseStatusData
+            val glucoseStatus = GlucoseStatus(injector).getGlucoseStatusData()
             if (lastBG != null) {
                 line1aa = lastBG.valueToUnitsToString(units)
                 line1 = line1aa
