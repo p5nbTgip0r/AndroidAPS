@@ -49,7 +49,7 @@ class CalibrationDialog : DialogFragmentWithDate() {
         super.onViewCreated(view, savedInstanceState)
 
         val units = profileFunction.getUnits()
-        val bg = Profile.fromMgdlToUnits(GlucoseStatus(injector).getGlucoseStatusData()?.glucose
+        val bg = Profile.fromMgdlToUnits(GlucoseStatus.GlucoseStatusBuilder(injector).getGlucoseStatusData()?.glucose
             ?: 0.0, units)
         if (units == Constants.MMOL)
             binding.bg.setParams(savedInstanceState?.getDouble("bg")

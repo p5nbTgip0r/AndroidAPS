@@ -278,7 +278,7 @@ public class WatchUpdaterService extends WearableListenerService implements Goog
         BgReading lastBG = iobCobCalculatorPlugin.lastBg();
         // Log.d(TAG, logPrefix + "LastBg=" + lastBG);
         if (lastBG != null) {
-            GlucoseStatus glucoseStatus = new GlucoseStatus(injector).getGlucoseStatusData();
+            GlucoseStatus glucoseStatus = new GlucoseStatus.GlucoseStatusBuilder(injector).getGlucoseStatusData();
 
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
                 googleApiConnect();
@@ -321,9 +321,9 @@ public class WatchUpdaterService extends WearableListenerService implements Goog
             dataMap.putString("delta", "--");
             dataMap.putString("avgDelta", "--");
         } else {
-            dataMap.putString("slopeArrow", slopeArrow(glucoseStatus.delta));
-            dataMap.putString("delta", deltastring(glucoseStatus.delta, glucoseStatus.delta * Constants.MGDL_TO_MMOLL, units));
-            dataMap.putString("avgDelta", deltastring(glucoseStatus.avgdelta, glucoseStatus.avgdelta * Constants.MGDL_TO_MMOLL, units));
+            dataMap.putString("slopeArrow", slopeArrow(glucoseStatus.getDelta()));
+            dataMap.putString("delta", deltastring(glucoseStatus.getDelta(), glucoseStatus.getDelta() * Constants.MGDL_TO_MMOLL, units));
+            dataMap.putString("avgDelta", deltastring(glucoseStatus.getAvgdelta(), glucoseStatus.getAvgdelta() * Constants.MGDL_TO_MMOLL, units));
         }
         dataMap.putLong("sgvLevel", sgvLevel);
         dataMap.putDouble("sgvDouble", lastBG.value);
@@ -386,7 +386,7 @@ public class WatchUpdaterService extends WearableListenerService implements Goog
         if (last_bg == null) return;
 
         List<BgReading> graph_bgs = MainApp.getDbHelper().getBgreadingsDataFromTime(startTime, true);
-        GlucoseStatus glucoseStatus = new GlucoseStatus(injector).getGlucoseStatusData(true);
+        GlucoseStatus glucoseStatus = new GlucoseStatus.GlucoseStatusBuilder(injector).getGlucoseStatusData(true);
 
         if (!graph_bgs.isEmpty()) {
             DataMap entries = dataMapSingleBG(last_bg, glucoseStatus);

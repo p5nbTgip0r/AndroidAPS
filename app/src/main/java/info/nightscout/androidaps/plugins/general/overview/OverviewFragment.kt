@@ -572,7 +572,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             overview_arrow?.setImageResource(lastBG.directionToIcon(databaseHelper))
             overview_arrow?.setColorFilter(color)
 
-            val glucoseStatus = GlucoseStatus(injector).getGlucoseStatusData()
+            val glucoseStatus = GlucoseStatus.GlucoseStatusBuilder(injector).getGlucoseStatusData()
             if (glucoseStatus != null) {
                 overview_delta_large?.text = Profile.toSignedUnitsString(glucoseStatus.delta, glucoseStatus.delta * Constants.MGDL_TO_MMOLL, units)
                 overview_delta_large?.setTextColor(color)

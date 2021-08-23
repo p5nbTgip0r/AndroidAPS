@@ -163,7 +163,7 @@ public class OpenAPSSMBPlugin extends PluginBase implements APSInterface, Constr
         DetermineBasalAdapterSMBJS determineBasalAdapterSMBJS;
         determineBasalAdapterSMBJS = new DetermineBasalAdapterSMBJS(new ScriptReader(context), getInjector());
 
-        GlucoseStatus glucoseStatus = new GlucoseStatus(getInjector()).getGlucoseStatusData();
+        GlucoseStatus glucoseStatus = new GlucoseStatus.GlucoseStatusBuilder(getInjector()).getGlucoseStatusData();
         Profile profile = profileFunction.getProfile();
         PumpInterface pump = activePlugin.getActivePump();
 

@@ -249,15 +249,15 @@ public class DetermineBasalAdapterAMAJS {
         mIobData = IobCobCalculatorPlugin.convertToJSONArray(iobArray);
 
         mGlucoseStatus = new JSONObject();
-        mGlucoseStatus.put("glucose", glucoseStatus.glucose);
+        mGlucoseStatus.put("glucose", glucoseStatus.getGlucose());
 
         if (sp.getBoolean(R.string.key_always_use_shortavg, false)) {
-            mGlucoseStatus.put("delta", glucoseStatus.short_avgdelta);
+            mGlucoseStatus.put("delta", glucoseStatus.getShort_avgdelta());
         } else {
-            mGlucoseStatus.put("delta", glucoseStatus.delta);
+            mGlucoseStatus.put("delta", glucoseStatus.getDelta());
         }
-        mGlucoseStatus.put("short_avgdelta", glucoseStatus.short_avgdelta);
-        mGlucoseStatus.put("long_avgdelta", glucoseStatus.long_avgdelta);
+        mGlucoseStatus.put("short_avgdelta", glucoseStatus.getShort_avgdelta());
+        mGlucoseStatus.put("long_avgdelta", glucoseStatus.getLong_avgdelta());
 
         mMealData = new JSONObject();
         mMealData.put("carbs", mealData.carbs);
