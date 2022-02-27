@@ -12,11 +12,13 @@ import info.nightscout.androidaps.events.Event
 import info.nightscout.androidaps.events.EventAutosensCalculationFinished
 import info.nightscout.androidaps.extensions.target
 import info.nightscout.androidaps.interfaces.ActivePlugin
+import info.nightscout.androidaps.interfaces.Constraint
 import info.nightscout.androidaps.interfaces.ProfileFunction
 import info.nightscout.shared.logging.AAPSLogger
 import info.nightscout.shared.logging.LTag
 import info.nightscout.androidaps.plugins.aps.openAPSSMB.SMBDefaults
 import info.nightscout.androidaps.plugins.bus.RxBus
+import info.nightscout.androidaps.plugins.configBuilder.ConstraintChecker
 import info.nightscout.androidaps.plugins.general.overview.events.EventNewNotification
 import info.nightscout.androidaps.plugins.general.overview.notifications.Notification
 import info.nightscout.androidaps.plugins.iob.iobCobCalculator.data.AutosensData
@@ -62,6 +64,7 @@ class IobCobOref1Thread internal constructor(
     @Inject lateinit var fabricPrivacy: FabricPrivacy
     @Inject lateinit var dateUtil: DateUtil
     @Inject lateinit var repository: AppRepository
+    @Inject lateinit var constraintChecker: ConstraintChecker
 
     private var mWakeLock: PowerManager.WakeLock? = null
 
@@ -255,7 +258,9 @@ class IobCobOref1Thread internal constructor(
                     val currentBasal = profile.getBasal(bgTime)
                     // always exclude the first 45m after each carb entry
                     //if (iob.iob > currentBasal || uam ) {
-                    if (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9) {
+                    val uam = Constraint(true)
+                    constraintChecker.isUAMEnabled(uam)
+                    if (uam.value() && (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9)) {
                         autosensData.mealStartCounter++
                         autosensData.uam = deviation > 0
                         autosensData.type = "uam"
