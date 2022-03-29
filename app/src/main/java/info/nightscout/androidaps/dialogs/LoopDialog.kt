@@ -63,7 +63,7 @@ class LoopDialog : DaggerDialogFragment() {
     @Inject lateinit var uel: UserEntryLogger
     @Inject lateinit var dateUtil: DateUtil
     @Inject lateinit var repository: AppRepository
-    @Inject lateinit var objectivePlugin: ObjectivesPlugin
+    // @Inject lateinit var objectivePlugin: ObjectivesPlugin
     @Inject lateinit var protectionCheck: ProtectionCheck
 
     private var queryingProtection = false
@@ -153,7 +153,7 @@ class LoopDialog : DaggerDialogFragment() {
         aapsLogger.debug("UpdateGUI from $from")
         val pumpDescription: PumpDescription = activePlugin.activePump.pumpDescription
         val closedLoopAllowed = constraintChecker.isClosedLoopAllowed(Constraint(true))
-        val closedLoopAllowed2 = objectivePlugin.objectives[ObjectivesPlugin.MAXIOB_OBJECTIVE].isCompleted
+        // val closedLoopAllowed2 = objectivePlugin.objectives[ObjectivesPlugin.MAXIOB_OBJECTIVE].isCompleted
         val lgsEnabled = constraintChecker.isLgsAllowed(Constraint(true))
         val apsMode = sp.getString(R.string.key_aps_mode, "open")
         val pump = activePlugin.activePump
@@ -218,8 +218,8 @@ class LoopDialog : DaggerDialogFragment() {
                     }
 
                     apsMode == "open"   -> {
-                        binding.overviewCloseloop.visibility =
-                            closedLoopAllowed2.toVisibility()          //show CloseLoop button only if Objective 6 is completed (closedLoopAllowed always false in open loop mode)
+                        binding.overviewCloseloop.visibility = View.VISIBLE
+                            // closedLoopAllowed2.toVisibility()          //show CloseLoop button only if Objective 6 is completed (closedLoopAllowed always false in open loop mode)
                         binding.overviewLgsloop.visibility = lgsEnabled.value().toVisibility()
                         binding.overviewOpenloop.visibility = View.GONE
                     }
