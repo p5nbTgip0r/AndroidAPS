@@ -22,6 +22,15 @@ class GlucoseStatusProvider @Inject constructor(
     fun getGlucoseStatusData(allowOldData: Boolean = false): GlucoseStatus? {
         val data = iobCobCalculator.ads.getBgReadingsDataTableCopy()
         val sizeRecords = data.size
+
+        if (data == cached?.data
+            // this magic number/time is from the `oldData` if-statement below.
+            // i can't remember why i did it this way instead of just moving it down, but i can't be bothered to understand the implications of doing it right now
+            && !(data[0].timestamp < System.currentTimeMillis() - 7 * 60 * 1000L && !allowOldData)) {
+            aapsLogger.debug(LTag.GLUCOSE, "using cached GlucoseStatus")
+            return cached
+        }
+
         if (sizeRecords == 0) {
             aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==0")
             return null
@@ -35,7 +44,7 @@ class GlucoseStatusProvider @Inject constructor(
         var change: Double
         if (sizeRecords == 1) {
             aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==1")
-            return GlucoseStatus(
+            cached = GlucoseStatus(
                 glucose = now.value,
                 noise = 0.0,
                 delta = 0.0,
@@ -44,6 +53,7 @@ class GlucoseStatusProvider @Inject constructor(
                 date = nowDate,
                 data = data,
             ).asRounded()
+            return cached
         }
         val nowValueList = ArrayList<Double>()
         val lastDeltas = ArrayList<Double>()
@@ -91,7 +101,7 @@ class GlucoseStatusProvider @Inject constructor(
         } else {
             average(lastDeltas)
         }
-        return GlucoseStatus(
+        cached = GlucoseStatus(
             glucose = now.value,
             date = nowDate,
             noise = 0.0, //for now set to nothing as not all CGMs report noise
@@ -100,9 +110,13 @@ class GlucoseStatusProvider @Inject constructor(
             longAvgDelta = average(longDeltas),
             data = data,
         ).also { aapsLogger.debug(LTag.GLUCOSE, it.log()) }.asRounded()
+
+        return cached
     }
 
     companion object {
+
+        var cached: GlucoseStatus? = null
 
         fun average(array: ArrayList<Double>): Double {
             var sum = 0.0
