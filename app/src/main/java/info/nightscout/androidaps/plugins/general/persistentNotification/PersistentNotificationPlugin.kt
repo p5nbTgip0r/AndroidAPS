@@ -209,12 +209,12 @@ class PersistentNotificationPlugin @Inject constructor(
         if (line2 != null) builder.setContentText(line2)
         if (line3 != null) builder.setSubText(line3)
         /// Android Auto
-        if (unreadConversationBuilder != null) {
-            builder.extend(
-                NotificationCompat.CarExtender()
-                    .setUnreadConversation(unreadConversationBuilder.build())
-            )
-        }
+        // if (unreadConversationBuilder != null) {
+        //     builder.extend(
+        //         NotificationCompat.CarExtender()
+        //             .setUnreadConversation(unreadConversationBuilder.build())
+        //     )
+        // }
         /// End Android Auto
         builder.setContentIntent(notificationHolder.openAppIntent(context))
         val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
