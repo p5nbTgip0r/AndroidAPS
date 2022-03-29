@@ -41,7 +41,7 @@ class HardLimits @Inject constructor(
         // Very Hard Limits Ranges
         // First value is the Lowest and second value is the Highest a Limit can define
         val VERY_HARD_LIMIT_MIN_BG = doubleArrayOf(80.0, 180.0)
-        val VERY_HARD_LIMIT_MAX_BG = doubleArrayOf(90.0, 200.0)
+        val VERY_HARD_LIMIT_MAX_BG = doubleArrayOf(85.0, 200.0)
         val VERY_HARD_LIMIT_TARGET_BG = doubleArrayOf(80.0, 200.0)
 
         // Very Hard Limits Ranges for Temp Targets
@@ -53,7 +53,7 @@ class HardLimits @Inject constructor(
         val MIN_IC = doubleArrayOf(2.0, 2.0, 2.0, 2.0, 0.3)
         val MAX_IC = doubleArrayOf(100.0, 100.0, 100.0, 100.0, 100.0)
         const val MIN_ISF = 2.0 // mgdl
-        const val MAX_ISF = 720.0 // mgdl
+        const val MAX_ISF = 1620.0 // mgdl
         val MAX_IOB_AMA = doubleArrayOf(3.0, 5.0, 7.0, 12.0, 25.0)
         val MAX_IOB_SMB = doubleArrayOf(7.0, 13.0, 22.0, 30.0, 70.0)
         val MAX_BASAL = doubleArrayOf(2.0, 5.0, 10.0, 12.0, 25.0)
