@@ -590,14 +590,14 @@ class MedtronicPumpPlugin @Inject constructor(
     override fun deliverBolus(detailedBolusInfo: DetailedBolusInfo): PumpEnactResult {
         aapsLogger.info(LTag.PUMP, "MedtronicPumpPlugin::deliverBolus - " + BolusDeliveryType.DeliveryPrepared)
         setRefreshButtonEnabled(false)
-        if (detailedBolusInfo.insulin > medtronicPumpStatus.reservoirRemainingUnits) {
-            return PumpEnactResult(injector) //
-                .success(false) //
-                .enacted(false) //
-                .comment(rh.gs(R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
-                               medtronicPumpStatus.reservoirRemainingUnits,
-                               detailedBolusInfo.insulin))
-        }
+        // if (detailedBolusInfo.insulin > medtronicPumpStatus.reservoirRemainingUnits) {
+        //     return PumpEnactResult(injector) //
+        //         .success(false) //
+        //         .enacted(false) //
+        //         .comment(rh.gs(R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
+        //                        medtronicPumpStatus.reservoirRemainingUnits,
+        //                        detailedBolusInfo.insulin))
+        // }
         bolusDeliveryType = BolusDeliveryType.DeliveryPrepared
         if (isPumpNotReachable) {
             aapsLogger.debug(LTag.PUMP, "MedtronicPumpPlugin::deliverBolus - Pump Unreachable.")
