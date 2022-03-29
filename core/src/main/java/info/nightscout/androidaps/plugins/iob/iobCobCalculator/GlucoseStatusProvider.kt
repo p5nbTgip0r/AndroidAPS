@@ -41,7 +41,8 @@ class GlucoseStatusProvider @Inject constructor(
                 delta = 0.0,
                 shortAvgDelta = 0.0,
                 longAvgDelta = 0.0,
-                date = nowDate
+                date = nowDate,
+                data = data,
             ).asRounded()
         }
         val nowValueList = ArrayList<Double>()
@@ -97,6 +98,7 @@ class GlucoseStatusProvider @Inject constructor(
             shortAvgDelta = shortAverageDelta,
             delta = delta,
             longAvgDelta = average(longDeltas),
+            data = data,
         ).also { aapsLogger.debug(LTag.GLUCOSE, it.log()) }.asRounded()
     }
 

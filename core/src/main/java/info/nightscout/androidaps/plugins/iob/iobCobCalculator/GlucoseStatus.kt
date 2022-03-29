@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.iob.iobCobCalculator
 
+import info.nightscout.androidaps.database.entities.GlucoseValue
 import info.nightscout.androidaps.utils.DecimalFormatter
 import info.nightscout.androidaps.utils.Round
 
@@ -9,7 +10,8 @@ data class GlucoseStatus(
     val delta: Double = 0.0,
     val shortAvgDelta: Double = 0.0,
     val longAvgDelta: Double = 0.0,
-    val date: Long = 0L
+    val date: Long = 0L,
+    val data: List<GlucoseValue>,
 ) {
 
     fun log(): String = "Glucose: " + DecimalFormatter.to0Decimal(glucose) + " mg/dl " +
