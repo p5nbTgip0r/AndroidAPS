@@ -536,13 +536,19 @@ class MedtronicCommunicationManager  // This empty constructor must be kept, oth
 
                 aapsLogger.debug(LTag.PUMPCOMM, "End Response: {}", ByteUtil.getHex(data))
 
-                val basalProfile: BasalProfile? = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
+                var basalProfile: BasalProfile? = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
                 // checkResponseRawContent(data, commandType) {
                 //     basalProfile = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
                 // }
 
                 if (basalProfile != null) {
-                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "Converted response for %s is %s.", commandType.name, basalProfile))
+                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "(pre-conversion) Converted response for %s is %s.", commandType.name, basalProfile))
+
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile)
+
+                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "(post-conversion) Converted response for %s is %s.", commandType.name, basalProfile))
+
                     medtronicUtil.setCurrentCommand(null)
                     medtronicPumpStatus.pumpDeviceState = PumpDeviceState.Sleeping
                     return basalProfile
@@ -612,7 +618,8 @@ class MedtronicCommunicationManager  // This empty constructor must be kept, oth
     }
 
     fun setPumpTime(): Boolean {
-        val gc = GregorianCalendar()
+        // set the calendar to UTC
+        val gc = GregorianCalendar(TimeZone.getTimeZone("UTC"))
         gc.add(Calendar.SECOND, 5)
         aapsLogger.info(LTag.PUMPCOMM, "setPumpTime: " + DateTimeUtil.toString(gc))
         val yearByte = getByteArrayFromUnsignedShort(gc[Calendar.YEAR], true)
