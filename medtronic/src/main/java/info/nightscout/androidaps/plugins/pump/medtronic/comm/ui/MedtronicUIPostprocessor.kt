@@ -40,8 +40,10 @@ class MedtronicUIPostprocessor @Inject constructor(
             MedtronicCommandType.SetBasalProfileSTD  -> {
                 val response = uiTask.result as Boolean?
                 if (response != null && response) {
-                    val basalProfile = uiTask.getParameter(0) as BasalProfile
+                    var basalProfile = uiTask.getParameter(0) as BasalProfile
                     aapsLogger.debug("D: basal profile returned after set: $basalProfile")
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile)
 
                     medtronicPumpStatus.basalsByHour = basalProfile.getProfilesByHour(medtronicPumpPlugin.pumpDescription.pumpType)
                 }
@@ -131,8 +133,9 @@ class MedtronicUIPostprocessor @Inject constructor(
     private fun processTime(uiTask: MedtronicUITask) {
         val clockDTO = uiTask.result as ClockDTO?
         if (clockDTO != null) {
+            // device time is not in UTC, don't set it as so
             val dur = Duration(clockDTO.pumpTime.toDateTime(DateTimeZone.UTC),
-                clockDTO.localDeviceTime.toDateTime(DateTimeZone.UTC))
+                clockDTO.localDeviceTime.toDateTime())
             clockDTO.timeDifference = dur.standardSeconds.toInt()
             medtronicUtil.pumpTime = clockDTO
             aapsLogger.debug(

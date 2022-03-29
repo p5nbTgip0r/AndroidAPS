@@ -10,6 +10,7 @@ import org.joda.time.Seconds;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * This is simple version of ATechDate, limited only to one format (yyyymmddHHMIss)
@@ -75,7 +76,9 @@ public class DateTimeUtil {
         int second = (int) atechDateTime;
 
         try {
-            return new GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second);
+            GregorianCalendar calendar = new GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second);
+            calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return calendar;
         } catch (Exception ex) {
             //LOG.error("DateTimeUtil", String.format("Error creating GregorianCalendar from values [atechDateTime=%d, year=%d, month=%d, day=%d, hour=%d, minute=%d, second=%d]", atechDateTime, year, month, dayOfMonth, hourOfDay, minute, second));
             //return null;
