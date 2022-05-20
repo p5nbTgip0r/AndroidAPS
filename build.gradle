@@ -65,6 +65,12 @@ plugins {
 }
 
 allprojects {
+    apply plugin: 'idea'
+
+    idea.module {
+        excludeDirs += file('build/')
+    }
+
     repositories {
         google()
         mavenCentral()
