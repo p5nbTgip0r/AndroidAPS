@@ -112,8 +112,8 @@ class MainApp : DaggerApplication() {
         // trigger here to see the new version on app start after an update
         versionCheckersUtils.triggerCheckVersion()
         // check if identification is set
-        if (buildHelper.isDev() && sp.getStringOrNull(R.string.key_email_for_crash_report, null).isNullOrBlank())
-            notificationStore.add(Notification(Notification.IDENTIFICATION_NOT_SET, getString(R.string.identification_not_set), Notification.INFO))
+        // if (buildHelper.isDev() && sp.getStringOrNull(R.string.key_email_for_crash_report, null).isNullOrBlank())
+            // notificationStore.add(Notification(Notification.IDENTIFICATION_NOT_SET, getString(R.string.identification_not_set), Notification.INFO))
 
         // Register all tabs in app here
         pluginStore.plugins = plugins
