@@ -70,7 +70,7 @@ class TddCalculator @Inject constructor(
     }
 
     fun calculateToday(): TotalDailyDose {
-        var startTime = MidnightTime.calc(dateUtil.now())
+        val startTime = MidnightTime.calc(dateUtil.now())
         val endTime = dateUtil.now()
         return calculate(startTime, endTime)
     }
@@ -82,7 +82,9 @@ class TddCalculator @Inject constructor(
     }
 
     fun calculate(startTime: Long, endTime: Long): TotalDailyDose {
-        val tdd = TotalDailyDose(timestamp = startTime)
+        val startTimeAligned = startTime - startTime % (5 * 60 * 1000)
+        val endTimeAligned = endTime - endTime % (5 * 60 * 1000)
+        val tdd = TotalDailyDose(timestamp = startTimeAligned)
         repository.getBolusesDataFromTimeToTime(startTime, endTime, true).blockingGet()
             .filter { it.type != Bolus.Type.PRIMING }
             .forEach { t ->
@@ -92,14 +94,14 @@ class TddCalculator @Inject constructor(
             tdd.carbs += t.amount
         }
         val calculationStep = T.mins(5).msecs()
-        for (t in startTime until endTime step calculationStep) {
-            val tbr = iobCobCalculator.getTempBasalIncludingConvertedExtended(t)
+        for (t in startTimeAligned until endTimeAligned step calculationStep) {
+
             val profile = profileFunction.getProfile(t) ?: continue
-            val absoluteRate = tbr?.convertedToAbsolute(t, profile) ?: profile.getBasal(t)
+            val tbr = iobCobCalculator.getBasalData(profile, t)
+            val absoluteRate = tbr.tempBasalAbsolute
             tdd.basalAmount += absoluteRate / 60.0 * 5.0
 
             if (!activePlugin.activePump.isFakingTempsByExtendedBoluses) {
-                // they are not included in TBRs
                 val eb = iobCobCalculator.getExtendedBolus(t)
                 val absoluteEbRate = eb?.rate ?: 0.0
                 tdd.bolusAmount += absoluteEbRate / 60.0 * 5.0
