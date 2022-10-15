@@ -21,11 +21,6 @@ apply from: "${project.rootDir}/core/android_dependencies.gradle"
 apply from: "${project.rootDir}/core/jacoco_global.gradle"
 
 
-ext {
-    wearableVersion = "2.9.0"
-    playServicesWearable = "17.1.0"
-}
-
 def generateGitBuild = { ->
 
     StringBuilder stringBuilder = new StringBuilder()
@@ -48,7 +43,7 @@ def generateGitBuild = { ->
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 23
@@ -56,6 +51,10 @@ android {
         versionCode 2
         versionName "1.0.3"
         buildConfigField "String", "BUILDVERSION", generateGitBuild()
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     flavorDimensions "standard"
@@ -81,6 +80,7 @@ android {
             versionName version + "-nsclient"
         }
     }
+    namespace 'info.nightscout.androidaps'
 }
 
 allprojects {
@@ -101,11 +101,12 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation "androidx.preference:preference-ktx:$preferencektx_version"
     implementation 'androidx.wear:wear:1.2.0'
-    implementation "androidx.wear.tiles:tiles:1.0.1"
+    implementation 'androidx.wear.tiles:tiles:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    compileOnly "com.google.android.wearable:wearable:${wearableVersion}"
-    implementation "com.google.android.support:wearable:${wearableVersion}"
-    implementation "com.google.android.gms:play-services-wearable:${playServicesWearable}"
+    compileOnly "com.google.android.wearable:wearable:$wearable_version"
+    implementation "com.google.android.support:wearable:$wearable_version"
+    implementation "com.google.android.gms:play-services-wearable:$play_services_wearable_version"
     implementation(files('libs/ustwo-clockwise-debug.aar'))
     implementation(files('libs/wearpreferenceactivity-0.5.0.aar'))
     implementation('com.github.lecho:hellocharts-library:1.5.8@aar')

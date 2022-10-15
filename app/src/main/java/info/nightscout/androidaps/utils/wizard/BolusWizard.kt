@@ -408,8 +408,7 @@ class BolusWizard @Inject constructor(
         }
         if (useCob) message += "\n" + rh.gs(R.string.wizard_explain_cob, cob, insulinFromCOB)
         if (useBg) message += "\n" + rh.gs(R.string.wizard_explain_bg, insulinFromBG)
-        if (includeBolusIOB) message += "\n" + rh.gs(R.string.wizard_explain_bolus_iob, insulinFromBolusIOB)
-        if (includeBasalIOB) message += "\n" + rh.gs(R.string.wizard_explain_basal_iob, insulinFromBasalIOB)
+        if (includeBolusIOB) message += "\n" + rh.gs(R.string.wizard_explain_iob, insulinFromBolusIOB + insulinFromBasalIOB)
         if (useTrend) message += "\n" + rh.gs(R.string.wizard_explain_trend, insulinFromTrend)
         if (useSuperBolus) message += "\n" + rh.gs(R.string.wizard_explain_superbolus, insulinFromSuperBolus)
         if (percentageCorrection != 100) {
@@ -444,12 +443,7 @@ class BolusWizard @Inject constructor(
                         commandQueue.tempBasalPercent(0, 120, true, profile, PumpSync.TemporaryBasalType.NORMAL, object : Callback() {
                             override fun run() {
                                 if (!result.success) {
-                                    val i = Intent(ctx, ErrorHelperActivity::class.java)
-                                    i.putExtra(ErrorHelperActivity.SOUND_ID, R.raw.boluserror)
-                                    i.putExtra(ErrorHelperActivity.STATUS, result.comment)
-                                    i.putExtra(ErrorHelperActivity.TITLE, rh.gs(R.string.tempbasaldeliveryerror))
-                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    ctx.startActivity(i)
+                                    ErrorHelperActivity.runAlarm(ctx, result.comment, rh.gs(R.string.tempbasaldeliveryerror), R.raw.boluserror)
                                 }
                             }
                         })

@@ -14,6 +14,8 @@ import info.nightscout.androidaps.utils.T
 
 class DetailedBolusInfo {
 
+    val id = System.currentTimeMillis()
+
     // Requesting parameters for driver
     @JvmField var insulin = 0.0
     @JvmField var carbs = 0.0
@@ -105,7 +107,8 @@ class DetailedBolusInfo {
             Bolus(
                 timestamp = bolusTimestamp ?: timestamp,
                 amount = insulin,
-                type = bolusType.toDBbBolusType()
+                type = bolusType.toDBbBolusType(),
+                notes = notes,
             )
         else null
 
@@ -114,7 +117,8 @@ class DetailedBolusInfo {
             Carbs(
                 timestamp = carbsTimestamp ?: timestamp,
                 amount = carbs,
-                duration = carbsDuration
+                duration = carbsDuration,
+                notes = notes,
             )
         else null
 

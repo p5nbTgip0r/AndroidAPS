@@ -131,7 +131,7 @@ class DiaconnG8Plugin @Inject constructor(
         aapsLogger.debug(LTag.PUMP, "Diaconn G8 connect from: $reason")
         if(diaconnG8Service != null && mDeviceAddress != "" && mDeviceName != "") {
             val success = diaconnG8Service?.connect(reason, mDeviceAddress) ?: false
-            if(!success) ToastUtils.showToastInUiThread(context, rh.gs(R.string.ble_not_supported))
+            if(!success) ToastUtils.errorToast(context, R.string.ble_not_supported)
         }
     }
 
@@ -256,7 +256,7 @@ class DiaconnG8Plugin @Inject constructor(
             var carbTimeStamp = detailedBolusInfo.carbsTimestamp ?: detailedBolusInfo.timestamp
             if (carbTimeStamp == detailedBolusInfo.timestamp) carbTimeStamp -= T.mins(1).msecs() // better set 1 min back to prevents clash with insulin
             detailedBolusInfoStorage.add(detailedBolusInfo) // will be picked up on reading history
-            val t = EventOverviewBolusProgress.Treatment(0.0, 0, detailedBolusInfo.bolusType == DetailedBolusInfo.BolusType.SMB)
+            val t = EventOverviewBolusProgress.Treatment(0.0, 0, detailedBolusInfo.bolusType == DetailedBolusInfo.BolusType.SMB, detailedBolusInfo.id)
             var connectionOK = false
             if (detailedBolusInfo.insulin > 0 || carbs > 0) connectionOK = diaconnG8Service?.bolus(detailedBolusInfo.insulin, carbs.toInt(), carbTimeStamp, t)
                 ?: false

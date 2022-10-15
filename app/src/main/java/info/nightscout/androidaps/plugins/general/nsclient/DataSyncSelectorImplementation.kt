@@ -286,14 +286,14 @@ class DataSyncSelectorImplementation @Inject constructor(
                 bolusCalculatorResult.first.interfaceIDs.nightscoutId == null           ->
                     nsClientPlugin.nsClientService?.dbAdd(
                         "treatments",
-                        bolusCalculatorResult.first.toJson(true, dateUtil),
+                        bolusCalculatorResult.first.toJson(true, dateUtil, profileFunction),
                         DataSyncSelector.PairBolusCalculatorResult(bolusCalculatorResult.first, bolusCalculatorResult.second.id),
                         "$startId/$lastDbId"
                     )
                 // with nsId = update
                 bolusCalculatorResult.first.interfaceIDs.nightscoutId != null           ->
                     nsClientPlugin.nsClientService?.dbUpdate(
-                        "treatments", bolusCalculatorResult.first.interfaceIDs.nightscoutId, bolusCalculatorResult.first.toJson(false, dateUtil),
+                        "treatments", bolusCalculatorResult.first.interfaceIDs.nightscoutId, bolusCalculatorResult.first.toJson(false, dateUtil, profileFunction),
                         DataSyncSelector.PairBolusCalculatorResult(bolusCalculatorResult.first, bolusCalculatorResult.second.id), "$startId/$lastDbId"
                     )
             }
@@ -940,6 +940,7 @@ class DataSyncSelectorImplementation @Inject constructor(
         val lastChange = sp.getLong(R.string.key_local_profile_last_change, 0)
         if (lastChange == 0L) return
         if (lastChange > lastSync) {
+            if (localProfilePlugin.profile?.allProfilesValid != true) return
             val profileJson = localProfilePlugin.profile?.data ?: return
             nsClientPlugin.nsClientService?.dbAdd("profile", profileJson, DataSyncSelector.PairProfileStore(profileJson, dateUtil.now()), "")
         }

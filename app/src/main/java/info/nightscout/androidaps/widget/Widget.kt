@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.View
 import android.widget.RemoteViews
 import dagger.android.HasAndroidInjector
@@ -26,7 +28,6 @@ import info.nightscout.androidaps.plugins.general.overview.OverviewData
 import info.nightscout.androidaps.plugins.iob.iobCobCalculator.GlucoseStatusProvider
 import info.nightscout.androidaps.utils.DateUtil
 import info.nightscout.androidaps.utils.TrendCalculator
-import info.nightscout.androidaps.interfaces.ResourceHelper
 import info.nightscout.shared.logging.AAPSLogger
 import info.nightscout.shared.logging.LTag
 import info.nightscout.shared.sharedPreferences.SP
@@ -53,6 +54,7 @@ class Widget : AppWidgetProvider() {
     @Inject lateinit var sp: SP
     @Inject lateinit var constraintChecker: ConstraintChecker
 
+    private var handler = Handler(HandlerThread(this::class.simpleName + "Handler").also { it.start() }.looper)
     private val intentAction = "OpenApp"
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -88,16 +90,17 @@ class Widget : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent)
         views.setInt(R.id.widget_layout, "setBackgroundColor", Color.argb(alpha, 0, 0, 0))
 
-        updateBg(views)
-        updateTemporaryBasal(views)
-        updateExtendedBolus(views)
-        updateIobCob(views)
-        updateTemporaryTarget(views)
-        updateProfile(views)
-        updateSensitivity(views)
-
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views)
+        handler.post {
+            updateBg(views)
+            updateTemporaryBasal(views)
+            updateExtendedBolus(views)
+            updateIobCob(views)
+            updateTemporaryTarget(views)
+            updateProfile(views)
+            updateSensitivity(views)
+            // Instruct the widget manager to update the widget
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
     }
 
     private fun updateBg(views: RemoteViews) {
@@ -201,7 +204,7 @@ class Widget : AppWidgetProvider() {
         }
     }
 
-    fun updateProfile(views: RemoteViews) {
+    private fun updateProfile(views: RemoteViews) {
         val profileTextColor =
             profileFunction.getProfile()?.let {
                 if (it is ProfileSealed.EPS) {
@@ -223,7 +226,7 @@ class Widget : AppWidgetProvider() {
     }
 
     private fun updateSensitivity(views: RemoteViews) {
-        if (sp.getBoolean(R.string.key_openapsama_useautosens, false) && constraintChecker.isAutosensModeEnabled().value())
+        if (constraintChecker.isAutosensModeEnabled().value())
             views.setImageViewResource(R.id.sensitivity_icon, R.drawable.ic_swap_vert_black_48dp_green)
         else
             views.setImageViewResource(R.id.sensitivity_icon, R.drawable.ic_x_swap_vert)
@@ -253,7 +256,7 @@ class Widget : AppWidgetProvider() {
 
 internal fun updateWidget(context: Context) {
     context.sendBroadcast(Intent().also {
-        it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, Widget::class.java)))
+        it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, AppWidgetManager.getInstance(context)?.getAppWidgetIds(ComponentName(context, Widget::class.java)))
         it.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     })
 }

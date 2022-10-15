@@ -39,7 +39,7 @@ import info.nightscout.androidaps.skins.SkinProvider
 import info.nightscout.androidaps.utils.DateUtil
 import info.nightscout.androidaps.utils.FabricPrivacy
 import info.nightscout.androidaps.utils.alertDialogs.OKDialog
-import info.nightscout.androidaps.utils.buildHelper.BuildHelper
+import info.nightscout.androidaps.interfaces.BuildHelper
 import info.nightscout.androidaps.utils.protection.ProtectionCheck
 import info.nightscout.androidaps.interfaces.ResourceHelper
 import info.nightscout.androidaps.utils.rx.AapsSchedulers
@@ -312,7 +312,7 @@ class ActionsFragment : DaggerFragment() {
         for (customAction in customActions) {
             if (!customAction.isEnabled) continue
 
-            val btn = SingleClickButton(currentContext, null, android.R.attr.buttonStyle)
+            val btn = SingleClickButton(currentContext, null, R.attr.customBtnStyle)
             btn.text = rh.gs(customAction.name)
 
             val layoutParams = LinearLayout.LayoutParams(

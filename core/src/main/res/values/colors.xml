@@ -90,7 +90,7 @@
     <color name="zt">#00d2d2</color>
     <color name="calibration">#E83258</color>
     <color name="bolusDataPointColor">#00FFFF</color>
-    <color name="profileSwitch">#00FFFF</color>
+    <color name="profileSwitch">#000000</color>
     <color name="red">#FF0000</color>
     <color name="blue">#0000FF</color>
     <color name="sens">#008585</color>
@@ -111,7 +111,7 @@
 
     <!--    Toasts-->
     <color name="toastBorder">#666666</color>
-    <color name="toastBase">#ffffff</color>
+    <color name="toastBase">#000000</color>
     <color name="toastOk">#77dd77</color>
     <color name="toastError">#ff0400</color>
     <color name="toastWarn">#FF8C00</color>

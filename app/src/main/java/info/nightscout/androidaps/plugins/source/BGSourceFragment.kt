@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.view.*
 import androidx.core.util.forEach
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.android.support.DaggerFragment
@@ -23,6 +25,7 @@ import info.nightscout.androidaps.extensions.valueToUnitsString
 import info.nightscout.androidaps.interfaces.ActivePlugin
 import info.nightscout.androidaps.interfaces.PluginBase
 import info.nightscout.androidaps.interfaces.ProfileFunction
+import info.nightscout.androidaps.interfaces.ResourceHelper
 import info.nightscout.androidaps.logging.UserEntryLogger
 import info.nightscout.androidaps.plugins.bus.RxBus
 import info.nightscout.androidaps.utils.ActionModeHelper
@@ -30,7 +33,6 @@ import info.nightscout.androidaps.utils.DateUtil
 import info.nightscout.androidaps.utils.FabricPrivacy
 import info.nightscout.androidaps.utils.T
 import info.nightscout.androidaps.utils.alertDialogs.OKDialog
-import info.nightscout.androidaps.interfaces.ResourceHelper
 import info.nightscout.androidaps.utils.rx.AapsSchedulers
 import info.nightscout.shared.logging.AAPSLogger
 import info.nightscout.shared.logging.LTag
@@ -39,7 +41,7 @@ import io.reactivex.rxjava3.kotlin.plusAssign
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class BGSourceFragment : DaggerFragment() {
+class BGSourceFragment : DaggerFragment(), MenuProvider {
 
     @Inject lateinit var rxBus: RxBus
     @Inject lateinit var fabricPrivacy: FabricPrivacy
@@ -61,14 +63,16 @@ class BGSourceFragment : DaggerFragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        BgsourceFragmentBinding.inflate(inflater, container, false).also { _binding = it }.root
+        BgsourceFragmentBinding.inflate(inflater, container, false).also {
+            _binding = it
+            actionHelper = ActionModeHelper(rh, activity, this)
+            actionHelper.setUpdateListHandler { binding.recyclerview.adapter?.notifyDataSetChanged() }
+            actionHelper.setOnRemoveHandler { handler -> removeSelected(handler) }
+            requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actionHelper = ActionModeHelper(rh, activity)
-        actionHelper.setUpdateListHandler { binding.recyclerview.adapter?.notifyDataSetChanged() }
-        actionHelper.setOnRemoveHandler { removeSelected(it) }
-        setHasOptionsMenu(actionHelper.inMenu)
 
         binding.recyclerview.setHasFixedSize(true)
         binding.recyclerview.layoutManager = LinearLayoutManager(view.context)
@@ -102,13 +106,8 @@ class BGSourceFragment : DaggerFragment() {
         super.onPause()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         actionHelper.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
         actionHelper.onPrepareOptionsMenu(menu)
     }
 
@@ -119,8 +118,9 @@ class BGSourceFragment : DaggerFragment() {
         _binding = null
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-        actionHelper.onOptionsItemSelected(item)
+    override fun onMenuItemSelected(item: MenuItem) =
+        if (actionHelper.onOptionsItemSelected(item)) true
+        else super.onContextItemSelected(item)
 
     inner class RecyclerViewAdapter internal constructor(private var glucoseValues: List<GlucoseValue>) : RecyclerView.Adapter<RecyclerViewAdapter.GlucoseValuesViewHolder>() {
 
@@ -196,6 +196,7 @@ class BGSourceFragment : DaggerFragment() {
                         R.string.poctech            -> Sources.PocTech
                         R.string.tomato             -> Sources.Tomato
                         R.string.glunovo            -> Sources.Glunovo
+                        R.string.intelligo            -> Sources.Intelligo
                         R.string.xdrip              -> Sources.Xdrip
                         R.string.aidex              -> Sources.Aidex
                         else                        -> Sources.Unknown

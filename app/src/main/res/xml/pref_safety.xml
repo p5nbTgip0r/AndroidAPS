@@ -16,7 +16,7 @@
             android:summary="@string/patientage_summary"
             android:title="@string/patientage" />
 
-        <EditTextPreference
+        <info.nightscout.androidaps.utils.textValidator.ValidatingEditTextPreference
             android:defaultValue="3"
             android:inputType="numberDecimal"
             android:key="@string/key_treatmentssafety_maxbolus"
@@ -25,26 +25,14 @@
             validate:floatminNumber="0.1"
             validate:testType="floatNumericRange" />
 
-        <EditTextPreference
+        <info.nightscout.androidaps.utils.textValidator.ValidatingEditTextPreference
             android:defaultValue="48"
-            android:inputType="numberDecimal"
+            android:inputType="number"
             android:key="@string/key_treatmentssafety_maxcarbs"
             android:title="@string/treatmentssafety_maxcarbs_title"
             validate:floatmaxNumber="200"
             validate:floatminNumber="1"
             validate:testType="numericRange" />
-
-        <EditTextPreference
-            android:defaultValue="60"
-            android:inputType="numberDecimal"
-            android:dialogMessage="@string/treatmentssafety_lgsThreshold_summary"
-            android:key="@string/key_treatmentssafety_lgsThreshold"
-            android:title="@string/treatmentssafety_lgsThreshold_title"
-            validate:floatmaxNumber="100"
-            validate:floatminNumber="65"
-            validate:testType="numericRange" />
-
-
 
     </PreferenceCategory>
 

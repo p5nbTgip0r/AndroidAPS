@@ -31,16 +31,18 @@ fun ProfileSwitch.toJson(isAdd: Boolean, dateUtil: DateUtil): JSONObject =
     JSONObject()
         .put("timeshift", timeshift)
         .put("percentage", percentage)
-        .also { // remove customization to store original profileJson in toPureNsJson call
-            timeshift = 0
-            percentage = 100
-        }
+        .put("duration", T.msecs(duration).mins())
+        .put("profile", getCustomizedName())
+        .put("originalProfileName", profileName)
+        .put("originalDuration", duration)
         .put("created_at", dateUtil.toISOString(timestamp))
         .put("enteredBy", "openaps://" + "AndroidAPS")
         .put("isValid", isValid)
         .put("eventType", TherapyEvent.Type.PROFILE_SWITCH.text)
-        .put("duration", T.msecs(duration).mins())
-        .put("profile", profileName)
+        .also { // remove customization to store original profileJson in toPureNsJson call
+            timeshift = 0
+            percentage = 100
+        }
         .put("profileJson", ProfileSealed.PS(this).toPureNsJson(dateUtil).toString())
         .also {
             if (interfaceIDs.pumpId != null) it.put("pumpId", interfaceIDs.pumpId)
@@ -65,11 +67,13 @@ fun ProfileSwitch.toJson(isAdd: Boolean, dateUtil: DateUtil): JSONObject =
 fun profileSwitchFromJson(jsonObject: JSONObject, dateUtil: DateUtil, activePlugin: ActivePlugin): ProfileSwitch? {
     val timestamp = JsonHelper.safeGetLongAllowNull(jsonObject, "mills", null) ?: return null
     val duration = JsonHelper.safeGetLong(jsonObject, "duration")
+    val originalDuration = JsonHelper.safeGetLongAllowNull(jsonObject, "originalDuration")
     val timeshift = JsonHelper.safeGetLong(jsonObject, "timeshift")
     val percentage = JsonHelper.safeGetInt(jsonObject, "percentage", 100)
     val isValid = JsonHelper.safeGetBoolean(jsonObject, "isValid", true)
     val id = JsonHelper.safeGetStringAllowNull(jsonObject, "_id", null)
     val profileName = JsonHelper.safeGetStringAllowNull(jsonObject, "profile", null) ?: return null
+    val originalProfileName = JsonHelper.safeGetStringAllowNull(jsonObject, "originalProfileName", null)
     val profileJson = JsonHelper.safeGetStringAllowNull(jsonObject, "profileJson", null)
     val pumpId = JsonHelper.safeGetLongAllowNull(jsonObject, "pumpId", null)
     val pumpType = InterfaceIDs.PumpType.fromString(JsonHelper.safeGetStringAllowNull(jsonObject, "pumpType", null))
@@ -91,10 +95,10 @@ fun profileSwitchFromJson(jsonObject: JSONObject, dateUtil: DateUtil, activePlug
         icBlocks = profileSealed.icBlocks,
         targetBlocks = profileSealed.targetBlocks,
         glucoseUnit = ProfileSwitch.GlucoseUnit.fromConstant(profileSealed.units),
-        profileName = profileName,
-        timeshift = T.hours(timeshift).msecs(),
+        profileName = originalProfileName ?: profileName,
+        timeshift = timeshift,
         percentage = percentage,
-        duration = T.mins(duration).msecs(),
+        duration = originalDuration ?: T.mins(duration).msecs(),
         insulinConfiguration = profileSealed.insulinConfiguration,
         isValid = isValid
     ).also {

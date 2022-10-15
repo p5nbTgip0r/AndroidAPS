@@ -40,7 +40,7 @@ class BleCommCallbacks(
         if (newState == BluetoothProfile.STATE_CONNECTED && status == BluetoothGatt.GATT_SUCCESS) {
             connected.countDown()
         }
-        if (newState == BluetoothProfile.STATE_DISCONNECTED && status != BluetoothGatt.GATT_SUCCESS) {
+        if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             // If status == SUCCESS, it means that we initiated the disconnect.
             disconnectHandler.onConnectionLost(status)
         }
@@ -103,6 +103,7 @@ class BleCommCallbacks(
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
         aapsLogger.debug(
             LTag.PUMPBTCOMM,
@@ -115,6 +116,7 @@ class BleCommCallbacks(
         onWrite(status, characteristic.uuid, characteristic.value)
     }
 
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         super.onCharacteristicChanged(gatt, characteristic)
 
@@ -134,6 +136,7 @@ class BleCommCallbacks(
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onDescriptorWrite(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
         super.onDescriptorWrite(gatt, descriptor, status)
 

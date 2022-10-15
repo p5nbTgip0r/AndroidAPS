@@ -73,6 +73,7 @@ class UserEntryPresentationHelper @Inject constructor(
         Sources.PocTech             -> R.drawable.ic_poctech
         Sources.Tomato              -> R.drawable.ic_sensor
         Sources.Glunovo             -> R.drawable.ic_glunovo
+        Sources.Intelligo           -> R.drawable.ic_intelligo
         Sources.Xdrip               -> R.drawable.ic_blooddrop_48
         Sources.LocalProfile        -> R.drawable.ic_local_profile
         Sources.Loop                -> R.drawable.ic_loop_closed_white
@@ -91,9 +92,9 @@ class UserEntryPresentationHelper @Inject constructor(
         Sources.Insight             -> R.drawable.ic_insight_128
         Sources.Combo               -> R.drawable.ic_combo_128
         Sources.Medtronic           -> R.drawable.ic_veo_128
-        Sources.Omnipod             -> R.drawable.ic_pod_128
-        Sources.OmnipodEros         -> R.drawable.ic_pod_128
-        Sources.OmnipodDash         -> R.drawable.ic_pod_128
+        Sources.Omnipod             -> R.drawable.ic_patch_pump_outline
+        Sources.OmnipodEros         -> R.drawable.ic_patch_pump_outline
+        Sources.OmnipodDash         -> R.drawable.ic_patch_pump_outline
         Sources.MDI                 -> R.drawable.ic_ict
         Sources.VirtualPump         -> R.drawable.ic_virtual_pump
         Sources.SMS                 -> R.drawable.ic_sms

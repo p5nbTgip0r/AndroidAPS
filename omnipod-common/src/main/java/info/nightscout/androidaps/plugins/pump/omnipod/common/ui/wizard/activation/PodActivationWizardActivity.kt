@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.pump.omnipod.common.ui.wizard.activat
 
 import android.os.Bundle
 import androidx.annotation.IdRes
+import info.nightscout.androidaps.extensions.safeGetSerializableExtra
 import info.nightscout.androidaps.plugins.pump.omnipod.common.R
 import info.nightscout.androidaps.plugins.pump.omnipod.common.ui.wizard.common.activity.OmnipodWizardActivityBase
 
@@ -26,7 +27,7 @@ abstract class PodActivationWizardActivity : OmnipodWizardActivityBase() {
         setContentView(R.layout.omnipod_common_pod_activation_wizard_activity)
 
         startDestination = savedInstanceState?.getInt(KEY_START_DESTINATION, R.id.startPodActivationFragment)
-            ?: if (intent.getSerializableExtra(KEY_TYPE) as Type == Type.LONG) {
+            ?: if (intent.safeGetSerializableExtra(KEY_TYPE, Type::class.java) == Type.LONG) {
                 R.id.startPodActivationFragment
             } else {
                 R.id.attachPodFragment
@@ -40,7 +41,7 @@ abstract class PodActivationWizardActivity : OmnipodWizardActivityBase() {
         val navController = getNavController()
         val navInflater = navController.navInflater
         val graph = navInflater.inflate(R.navigation.omnipod_common_pod_activation_wizard_navigation_graph)
-        graph.startDestination = startDestination
+        graph.setStartDestination(startDestination)
         navController.graph = graph
     }
 
