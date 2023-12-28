@@ -8,6 +8,7 @@ import app.aaps.core.data.configuration.Constants
 import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.aps.AutosensData
 import app.aaps.core.interfaces.configuration.Config
+import app.aaps.core.interfaces.constraints.ConstraintsChecker
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.logging.LTag
@@ -25,6 +26,7 @@ import app.aaps.core.interfaces.utils.DecimalFormatter
 import app.aaps.core.interfaces.workflow.CalculationWorkflow
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.interfaces.Preferences
+import app.aaps.core.objects.constraints.ConstraintObject
 import app.aaps.core.objects.workflow.LoggingWorker
 import app.aaps.core.utils.receivers.DataWorkerStorage
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +58,7 @@ class IobCobOref1Worker(
     @Inject lateinit var autosensDataProvider: Provider<AutosensData>
     @Inject lateinit var decimalFormatter: DecimalFormatter
     @Inject lateinit var processedDeviceStatusData: ProcessedDeviceStatusData
+    @Inject lateinit var constraintChecker: ConstraintsChecker
 
     class IobCobOref1WorkerData(
         val iobCobCalculator: IobCobCalculator, // cannot be injected : HistoryBrowser uses different instance
@@ -256,7 +259,9 @@ class IobCobOref1Worker(
                     val currentBasal = profile.getBasal(bgTime)
                     // always exclude the first 45m after each carb entry
                     //if (iob.iob > currentBasal || uam ) {
-                    if (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9) {
+                    val uam = ConstraintObject(true, aapsLogger)
+                    constraintChecker.isUAMEnabled(uam)
+                    if (uam.value() && (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9)) {
                         autosensData.mealStartCounter++
                         autosensData.uam = deviation > 0
                         autosensData.type = "uam"
