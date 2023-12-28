@@ -279,12 +279,6 @@ abstract class PluginsListModule {
     @Binds
     @NotNSClient
     @IntoMap
-    @IntKey(270)
-    abstract fun bindVersionCheckerPlugin(plugin: VersionCheckerPlugin): PluginBase
-
-    @Binds
-    @NotNSClient
-    @IntoMap
     @IntKey(280)
     abstract fun bindSmsCommunicatorPlugin(plugin: SmsCommunicatorPlugin): PluginBase
 
