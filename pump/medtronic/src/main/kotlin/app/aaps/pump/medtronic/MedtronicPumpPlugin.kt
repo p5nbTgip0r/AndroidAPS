@@ -90,8 +90,8 @@ import app.aaps.pump.medtronic.defs.MedtronicCommandType.Companion.getSettings
 import app.aaps.pump.medtronic.defs.MedtronicCustomActionType
 import app.aaps.pump.medtronic.defs.MedtronicDeviceType
 import app.aaps.pump.medtronic.defs.MedtronicNotificationType
-import app.aaps.pump.medtronic.defs.MedtronicStatusRefreshType
 import app.aaps.pump.medtronic.defs.MedtronicUIResponseType
+import app.aaps.pump.medtronic.driver.MedtronicPumpDriverConfiguration
 import app.aaps.pump.medtronic.driver.MedtronicPumpStatus
 import app.aaps.pump.medtronic.events.EventMedtronicPumpConfigurationChanged
 import app.aaps.pump.medtronic.events.EventMedtronicPumpValuesChanged
@@ -102,7 +102,6 @@ import app.aaps.pump.medtronic.keys.MedtronicStringPreferenceKey
 import app.aaps.pump.medtronic.service.RileyLinkMedtronicService
 import app.aaps.pump.medtronic.util.MedtronicUtil
 import app.aaps.pump.medtronic.util.MedtronicUtil.Companion.isSame
-import app.aaps.pump.medtronic.driver.MedtronicPumpDriverConfiguration
 import org.joda.time.LocalDateTime
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -623,18 +622,6 @@ class MedtronicPumpPlugin @Inject constructor(
     override fun deliverBolus(detailedBolusInfo: DetailedBolusInfo): PumpEnactResult {
         aapsLogger.info(LTag.PUMP, "MedtronicPumpPlugin::deliverBolus - " + BolusDeliveryType.DeliveryPrepared)
         setRefreshButtonEnabled(false)
-        if (detailedBolusInfo.insulin > medtronicPumpStatus.reservoirRemainingUnits) {
-            return pumpEnactResultProvider.get() //
-                .success(false) //
-                .enacted(false) //
-                .comment(
-                    rh.gs(
-                        R.string.medtronic_cmd_bolus_could_not_be_delivered_no_insulin,
-                        medtronicPumpStatus.reservoirRemainingUnits,
-                        detailedBolusInfo.insulin
-                    )
-                )
-        }
         bolusDeliveryType = BolusDeliveryType.DeliveryPrepared
         if (isPumpNotReachable) {
             aapsLogger.debug(LTag.PUMP, "MedtronicPumpPlugin::deliverBolus - Pump Unreachable.")
