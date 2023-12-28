@@ -206,6 +206,7 @@ class PersistentNotificationPlugin(
         val builder = NotificationCompat.Builder(context, notificationHolder.channelID)
         builder.setOngoing(true)
         builder.setOnlyAlertOnce(true)
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         builder.setCategory(NotificationCompat.CATEGORY_STATUS)
         builder.setSmallIcon(iconsProvider.getNotificationIcon())
         builder.setContentTitle(line1)
