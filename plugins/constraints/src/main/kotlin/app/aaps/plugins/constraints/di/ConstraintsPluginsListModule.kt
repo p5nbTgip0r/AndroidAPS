@@ -2,7 +2,6 @@ package app.aaps.plugins.constraints.di
 
 import app.aaps.core.interfaces.di.APS
 import app.aaps.core.interfaces.di.AllConfigs
-import app.aaps.core.interfaces.di.NotNSClient
 import app.aaps.core.interfaces.plugin.PluginBase
 import app.aaps.plugins.constraints.bgQualityCheck.BgQualityCheckPlugin
 import app.aaps.plugins.constraints.dstHelper.DstHelperPlugin
@@ -10,7 +9,6 @@ import app.aaps.plugins.constraints.objectives.ObjectivesPlugin
 import app.aaps.plugins.constraints.safety.SafetyPlugin
 import app.aaps.plugins.constraints.signatureVerifier.SignatureVerifierPlugin
 import app.aaps.plugins.constraints.storage.StorageConstraintPlugin
-import app.aaps.plugins.constraints.versionChecker.VersionCheckerPlugin
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -34,12 +32,6 @@ abstract class ConstraintsPluginsListModule {
     @IntoMap
     @IntKey(800)
     abstract fun bindSafetyPlugin(plugin: SafetyPlugin): PluginBase
-
-    @Binds
-    @NotNSClient
-    @IntoMap
-    @IntKey(810)
-    abstract fun bindVersionCheckerPlugin(plugin: VersionCheckerPlugin): PluginBase
 
     @Binds
     @APS
