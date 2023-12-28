@@ -12,9 +12,9 @@ interface HardLimits {
         val LIMIT_TARGET_BG = doubleArrayOf(80.0, 200.0)
 
         // Very Hard Limits Ranges for Temp Targets
-        val LIMIT_TEMP_MIN_BG = doubleArrayOf(72.0, 180.0)
+        val LIMIT_TEMP_MIN_BG = doubleArrayOf(72.0, 270.0)
         val LIMIT_TEMP_MAX_BG = doubleArrayOf(72.0, 270.0)
-        val LIMIT_TEMP_TARGET_BG = doubleArrayOf(72.0, 200.0)
+        val LIMIT_TEMP_TARGET_BG = doubleArrayOf(72.0, 270.0)
         val MIN_DIA = doubleArrayOf(5.0, 5.0, 5.0, 5.0, 5.0)
         val MAX_DIA = doubleArrayOf(9.0, 9.0, 9.0, 9.0, 10.0)
         const val MIN_PEAK = 35 // mgdl
