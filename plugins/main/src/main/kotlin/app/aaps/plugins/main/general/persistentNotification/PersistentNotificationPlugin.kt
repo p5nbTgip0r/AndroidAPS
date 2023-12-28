@@ -70,12 +70,6 @@ class PersistentNotificationPlugin @Inject constructor(
 ) {
 
     // For Android Auto
-    // Intents are not declared in manifest and not consumed, this is intentionally because actually we can't do anything with
-    private val PACKAGE = "info.nightscout"
-    private val READ_ACTION = "info.nightscout.androidaps.ACTION_MESSAGE_READ"
-    private val REPLY_ACTION = "info.nightscout.androidaps.ACTION_MESSAGE_REPLY"
-    private val CONVERSATION_ID = "conversation_id"
-    private val EXTRA_VOICE_REPLY = "extra_voice_reply"
     // End Android auto
 
     private val disposable = CompositeDisposable()
@@ -167,37 +161,6 @@ class PersistentNotificationPlugin @Inject constructor(
             line3 += " - " + profileFunction.getProfileName()
             line3aa += " - " + profileFunction.getProfileName() + "."
             /// For Android Auto
-            val msgReadIntent = Intent()
-                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
-                .setAction(READ_ACTION)
-                .putExtra(CONVERSATION_ID, notificationHolder.notificationID)
-                .setPackage(PACKAGE)
-            val msgReadPendingIntent = PendingIntent.getBroadcast(
-                context,
-                notificationHolder.notificationID,
-                msgReadIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            val msgReplyIntent = Intent()
-                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
-                .setAction(REPLY_ACTION)
-                .putExtra(CONVERSATION_ID, notificationHolder.notificationID)
-                .setPackage(PACKAGE)
-            val msgReplyPendingIntent = PendingIntent.getBroadcast(
-                context,
-                notificationHolder.notificationID,
-                msgReplyIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            // Build a RemoteInput for receiving voice input from devices
-            val remoteInput = RemoteInput.Builder(EXTRA_VOICE_REPLY).build()
-            // Create the UnreadConversation
-            unreadConversationBuilder = NotificationCompat.CarExtender.UnreadConversation.Builder(line1aa + "\n" + line2aa)
-                .setLatestTimestamp(System.currentTimeMillis())
-                .setReadPendingIntent(msgReadPendingIntent)
-                .setReplyAction(msgReplyPendingIntent, remoteInput)
-            /// Add dot to produce a "more natural sounding result"
-            unreadConversationBuilder.addMessage(line3aa)
             /// End Android Auto
         } else {
             line1 = rh.gs(app.aaps.core.ui.R.string.no_profile_set)
@@ -212,12 +175,6 @@ class PersistentNotificationPlugin @Inject constructor(
         if (line2 != null) builder.setContentText(line2)
         if (line3 != null) builder.setSubText(line3)
         /// Android Auto
-        if (unreadConversationBuilder != null) {
-            builder.extend(
-                NotificationCompat.CarExtender()
-                    .setUnreadConversation(unreadConversationBuilder.build())
-            )
-        }
         /// End Android Auto
         builder.setContentIntent(notificationHolder.openAppIntent(context))
         val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
