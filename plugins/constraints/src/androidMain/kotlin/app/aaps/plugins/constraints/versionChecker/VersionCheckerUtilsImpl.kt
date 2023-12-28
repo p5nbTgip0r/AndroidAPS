@@ -62,21 +62,7 @@ class VersionCheckerUtilsImpl(
         }
 
     override fun triggerCheckVersion() {
-        val version: String? = AllowedVersions.findByApi(definition, Build.VERSION.SDK_INT)
-        val newVersionByApi = compareWithCurrentVersion(newVersion = version, currentVersion = config().VERSION_NAME)
-
-        // App expiration
-        if (newVersionByApi || config().isDev()) {
-            var endDate = preferences.get(LongComposedKey.AppExpiration, config().VERSION_NAME)
-            AllowedVersions.findByVersion(definition, config().VERSION_NAME)?.let { dateAsString ->
-                AllowedVersions.endDateToMilliseconds(dateAsString)?.let { ed ->
-                    endDate = ed + T.days(1).msecs()
-                    preferences.put(LongComposedKey.AppExpiration, config().VERSION_NAME, value = endDate)
-                }
-            }
-            if (endDate != 0L) onExpireDateDetected(config().VERSION_NAME, endDate)
-        }
-
+        return
     }
 
     @Suppress("SameParameterValue")
