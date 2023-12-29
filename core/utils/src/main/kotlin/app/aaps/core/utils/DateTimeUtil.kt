@@ -5,6 +5,7 @@ import org.joda.time.Minutes
 import org.joda.time.Seconds
 import java.util.Calendar
 import java.util.GregorianCalendar
+import java.util.TimeZone
 
 /*
 * Created by andy on 10/25/18.
@@ -55,7 +56,9 @@ object DateTimeUtil {
         val minute = (dateTime / 100L).toInt()
         dateTime -= minute * 100L
         val second = dateTime.toInt()
-        return GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second)
+        val calendar = GregorianCalendar(year, month - 1, dayOfMonth, hourOfDay, minute, second)
+        calendar.timeZone = TimeZone.getTimeZone("UTC")
+        return calendar
     }
 
     fun toATechDate(ldt: LocalDateTime): Long {
