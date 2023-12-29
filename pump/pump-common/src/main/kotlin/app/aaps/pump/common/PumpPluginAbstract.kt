@@ -245,7 +245,11 @@ abstract class PumpPluginAbstract protected constructor(
         val status = JSONObject()
         val extended = JSONObject()
         try {
-            battery.put("percent", pumpStatusData.batteryRemaining)
+            if (pumpStatusData.batteryVoltage != null) {
+                battery.put("voltage", pumpStatusData.batteryVoltage)
+            } else {
+                battery.put("percent", pumpStatusData.batteryRemaining)
+            }
             status.put("status", pumpStatusData.pumpRunningState.status)
             extended.put("Version", version)
             try {
