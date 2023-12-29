@@ -44,13 +44,14 @@ import app.aaps.pump.medtronic.driver.MedtronicPumpStatus
 import app.aaps.pump.medtronic.util.MedtronicUtil
 import app.aaps.pump.medtronic.util.MedtronicUtil.Companion.createByteArray
 import app.aaps.pump.medtronic.util.MedtronicUtil.Companion.getByteArrayFromUnsignedShort
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import org.joda.time.LocalDateTime
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.Locale
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.SingleIn
+import java.util.TimeZone
 
 /**
  * Original file created by geoff on 5/30/16.
@@ -575,13 +576,19 @@ class MedtronicCommunicationManager(
 
                 aapsLogger.debug(LTag.PUMPCOMM, "End Response: {}", ByteUtil.getHex(data))
 
-                val basalProfile: BasalProfile? = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
+                var basalProfile: BasalProfile? = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
                 // checkResponseRawContent(data, commandType) {
                 //     basalProfile = medtronicConverter.decodeBasalProfile(medtronicPumpPlugin.pumpDescription.pumpType, data)
                 // }
 
                 if (basalProfile != null) {
-                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "Converted response for %s is %s.", commandType.name, basalProfile))
+                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "(pre-conversion) Converted response for %s is %s.", commandType.name, basalProfile))
+
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile)
+
+                    aapsLogger.debug(LTag.PUMPCOMM, String.format(Locale.ENGLISH, "(post-conversion) Converted response for %s is %s.", commandType.name, basalProfile))
+
                     medtronicUtil.setCurrentCommand(null)
                     medtronicPumpStatus.pumpDeviceState = PumpDeviceState.Sleeping
                     return basalProfile
@@ -652,7 +659,8 @@ class MedtronicCommunicationManager(
     }
 
     fun setPumpTime(): Boolean {
-        val gc = GregorianCalendar()
+        // set the calendar to UTC
+        val gc = GregorianCalendar(TimeZone.getTimeZone("UTC"))
         gc.add(Calendar.SECOND, 5)
         aapsLogger.info(LTag.PUMPCOMM, "setPumpTime: " + DateTimeUtil.toString(gc))
         val yearByte = getByteArrayFromUnsignedShort(gc[Calendar.YEAR], true)

@@ -14,13 +14,13 @@ import app.aaps.pump.medtronic.defs.MedtronicNotificationType
 import app.aaps.pump.medtronic.defs.MedtronicUIResponseType
 import app.aaps.pump.medtronic.driver.MedtronicPumpStatus
 import app.aaps.pump.medtronic.util.MedtronicUtil
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import org.joda.time.DateTimeZone
 import org.joda.time.Duration
 import java.util.Date
 import java.util.Locale
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.SingleIn
 
 /**
  * Created by andy on 6/15/18.
@@ -42,8 +42,10 @@ class MedtronicUIPostprocessor(
             MedtronicCommandType.SetBasalProfileSTD  -> {
                 val response = uiTask.result as Boolean?
                 if (response != null && response) {
-                    val basalProfile = uiTask.getParameter(0) as BasalProfile
+                    var basalProfile = uiTask.getParameter(0) as BasalProfile
                     aapsLogger.debug("D: basal profile returned after set: $basalProfile")
+                    // pump profile -> aaps, need local time
+                    basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, medtronicPumpStatus.pumpType, basalProfile)
 
                     medtronicPumpStatus.basalsByHour = basalProfile.getProfilesByHour(medtronicPumpPlugin.pumpDescription.pumpType)
                 }
@@ -133,9 +135,10 @@ class MedtronicUIPostprocessor(
     private fun processTime(uiTask: MedtronicUITask) {
         val clockDTO = uiTask.result as ClockDTO?
         if (clockDTO != null) {
+            // device time is not in UTC, don't set it as so
             val dur = Duration(
                 clockDTO.pumpTime.toDateTime(DateTimeZone.UTC),
-                clockDTO.localDeviceTime.toDateTime(DateTimeZone.UTC)
+                clockDTO.localDeviceTime.toDateTime()
             )
             clockDTO.timeDifference = dur.standardSeconds.toInt()
             medtronicUtil.pumpTime = clockDTO

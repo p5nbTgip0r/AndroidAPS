@@ -21,6 +21,7 @@ import app.aaps.pump.common.sync.PumpDbEntryBolus
 import app.aaps.pump.common.sync.PumpDbEntryCarbs
 import app.aaps.pump.common.sync.PumpDbEntryTBR
 import app.aaps.pump.common.sync.PumpSyncStorage
+import app.aaps.pump.medtronic.MedtronicPumpPlugin
 import app.aaps.pump.medtronic.R
 import app.aaps.pump.medtronic.comm.history.pump.MedtronicPumpHistoryDecoder
 import app.aaps.pump.medtronic.comm.history.pump.PumpHistoryEntry
@@ -40,14 +41,14 @@ import app.aaps.pump.medtronic.keys.MedtronicLongNonKey
 import app.aaps.pump.medtronic.util.MedtronicUtil
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.runBlocking
 import org.apache.commons.lang3.StringUtils
 import org.joda.time.LocalDateTime
 import java.util.GregorianCalendar
 import java.util.Locale
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.SingleIn
 
 /**
  * Created by andy on 10/12/18.
@@ -1362,7 +1363,11 @@ class MedtronicHistoryData(
         }
         if (newProfile != null) {
             aapsLogger.debug(LTag.PUMP, "processLastBasalProfileChange. item found, setting new basalProfileLocally: $newProfile")
-            val basalProfile = newProfile.decodedData["Object"] as BasalProfile
+            var basalProfile = newProfile.decodedData["Object"] as BasalProfile
+
+            // pump profile -> aaps, need local time
+            basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, mdtPumpStatus.pumpType, basalProfile)
+
             mdtPumpStatus.basalsByHour = basalProfile.getProfilesByHour(pumpType)
         }
     }
