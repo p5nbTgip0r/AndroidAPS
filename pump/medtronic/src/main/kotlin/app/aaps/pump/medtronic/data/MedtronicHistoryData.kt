@@ -20,6 +20,7 @@ import app.aaps.pump.common.sync.PumpDbEntryBolus
 import app.aaps.pump.common.sync.PumpDbEntryCarbs
 import app.aaps.pump.common.sync.PumpDbEntryTBR
 import app.aaps.pump.common.sync.PumpSyncStorage
+import app.aaps.pump.medtronic.MedtronicPumpPlugin
 import app.aaps.pump.medtronic.R
 import app.aaps.pump.medtronic.comm.history.pump.MedtronicPumpHistoryDecoder
 import app.aaps.pump.medtronic.comm.history.pump.PumpHistoryEntry
@@ -1359,7 +1360,11 @@ class MedtronicHistoryData @Inject constructor(
         }
         if (newProfile != null) {
             aapsLogger.debug(LTag.PUMP, "processLastBasalProfileChange. item found, setting new basalProfileLocally: $newProfile")
-            val basalProfile = newProfile.decodedData["Object"] as BasalProfile
+            var basalProfile = newProfile.decodedData["Object"] as BasalProfile
+
+            // pump profile -> aaps, need local time
+            basalProfile = MedtronicPumpPlugin.convertProfileTimes(aapsLogger, false, mdtPumpStatus.pumpType, basalProfile)
+
             mdtPumpStatus.basalsByHour = basalProfile.getProfilesByHour(pumpType)
         }
     }
