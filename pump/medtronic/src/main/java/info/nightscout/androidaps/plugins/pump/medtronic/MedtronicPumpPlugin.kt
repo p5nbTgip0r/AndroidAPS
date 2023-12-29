@@ -72,10 +72,12 @@ import info.nightscout.pump.common.defs.PumpDriverState
 import info.nightscout.pump.common.sync.PumpDbEntryTBR
 import info.nightscout.pump.common.sync.PumpSyncStorage
 import info.nightscout.pump.common.utils.ProfileUtil
+import org.joda.time.Instant
 import org.joda.time.LocalDateTime
 import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.abs
@@ -240,7 +242,7 @@ class MedtronicPumpPlugin @Inject constructor(
     override val pumpStatusData: PumpStatus get() = medtronicPumpStatus
     override fun deviceID(): String = "Medtronic"
     override val isFakingTempsByExtendedBoluses: Boolean = false
-    override fun canHandleDST(): Boolean = false
+    override fun canHandleDST(): Boolean = true
     private var isServiceSet: Boolean = false
     override val rileyLinkService: RileyLinkMedtronicService? get() = rileyLinkMedtronicService
 
@@ -1143,7 +1145,7 @@ class MedtronicPumpPlugin @Inject constructor(
     }
 
     private fun convertProfileToMedtronicProfile(profile: Profile): BasalProfile {
-        val basalProfile = BasalProfile(aapsLogger)
+        var basalProfile = BasalProfile(aapsLogger)
         for (i in 0..23) {
             val rate = profile.getBasalTimeFromMidnight(i * 60 * 60)
             val v = pumpType.determineCorrectBasalSize(rate)
@@ -1151,6 +1153,9 @@ class MedtronicPumpPlugin @Inject constructor(
             basalProfile.addEntry(basalEntry)
         }
         basalProfile.generateRawDataFromEntries()
+
+        // aaps profile -> pump profile, need UTC
+        basalProfile = convertProfileTimes(aapsLogger, true, pumpType, basalProfile)
         return basalProfile
     }
 
@@ -1224,4 +1229,47 @@ class MedtronicPumpPlugin @Inject constructor(
         refreshCustomActionsList()
     }
 
+    companion object {
+        /**
+         * Converts basal profile entries between UTC and local time.
+         *
+         * toUTC=true assumes the profile entries are set in local time and need to be converted to UTC
+         * toUTC=false assumes the profile entries are set in UTC and need to be converted to local time
+         *
+         * @param toUTC whether to convert to UTC or from UTC
+         * @param profile profile to convert
+         * @return time-converted profile
+         */
+        fun convertProfileTimes(aapsLogger: AAPSLogger, toUTC: Boolean, pumpType: PumpType, profile: BasalProfile): BasalProfile {
+            val converted = BasalProfile(aapsLogger)
+            val basalProfileEntries: MutableList<BasalProfileEntry> = ArrayList()
+            var tzOffset = TimeZone.getDefault().getOffset(Instant.now().millis)
+            if (toUTC) {
+                // invert offset to shift times towards UTC instead of further away
+                tzOffset = -tzOffset
+            }
+            for (entry in profile.getEntries()) {
+                val newBasalTime = entry.startTime!!.plusMillis(tzOffset)
+                val basalEntry = BasalProfileEntry(entry.rate, newBasalTime.hourOfDay, 0)
+                basalEntry.rate = pumpType.determineCorrectBasalSize(entry.rate)
+                basalProfileEntries.add(basalEntry)
+                aapsLogger.debug(
+                    LTag.PUMP,
+                    "Created basal entry " + entry.startTime!!.hourOfDay().get() + " -> " + basalEntry.startTime!!.hourOfDay().get() + " - " + basalEntry.rate + " (" + tzOffset + ")"
+                )
+            }
+
+            // sort the entries in ascending order
+            // this means 00:00 at the start and 23:00 at the end
+            basalProfileEntries.sortWith { e1: BasalProfileEntry, e2: BasalProfileEntry ->
+                e1.startTime!!.hourOfDay - e2.startTime!!.hourOfDay
+            }
+            for (entry in basalProfileEntries) {
+                aapsLogger.debug(LTag.PUMP, "converted: {}: {}", entry.startTime, entry.rate)
+                converted.addEntry(entry)
+            }
+            converted.generateRawDataFromEntries()
+            return converted
+        }
+    }
 }
