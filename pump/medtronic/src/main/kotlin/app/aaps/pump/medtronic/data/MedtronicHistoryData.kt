@@ -897,6 +897,13 @@ class MedtronicHistoryData @Inject constructor(
             if (previousItem != null) {
 
                 val pheEnd = PumpHistoryEntry()
+                // -- UTC PATCH --
+                // This area of code fixes zero temp targets.
+                // However, by setting `atechDateTime` it messes things up even more.
+                // The setter for `atechDateTime` assumes the value being given is in UTC, but by using the setter with its own value, we effectively convert it twice.
+
+                // pheEnd.ignoreTzConversion = true
+
                 pheEnd.atechDateTime = DateTimeUtil.getATDWithAddedSeconds(tempBasalProcessDTO.itemOne.atechDateTime, -2)
                 pheEnd.addDecodedData("Object", TempBasalPair(0.0, false, 0))
 
