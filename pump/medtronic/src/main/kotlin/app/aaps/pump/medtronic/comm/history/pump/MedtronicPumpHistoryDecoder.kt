@@ -498,7 +498,10 @@ class MedtronicPumpHistoryDecoder @Inject constructor(
             val dayOfMonth: Int = (dt.get(3) and 0x1F).toInt()
             val year = fix2DigitYear((dt.get(4) and 0x3F.toByte()).toInt()) // Assuming this is correct, need to verify. Otherwise this will be
             // a problem in 2016.
-            entry.atechDateTime = DateTimeUtil.toATechDate(year, month, dayOfMonth, hour, minutes, seconds)
+            val atechdate = DateTimeUtil.toATechDate(year, month, dayOfMonth, hour, minutes, seconds)
+            aapsLogger.debug(LTag.PUMP, "ATECH CONVERSION:: Parsed datetime: $atechdate")
+            entry.utc(atechdate)
+            aapsLogger.debug(LTag.PUMP, "ATECH CONVERSION:: Converted datetime: ${entry.atechDateTime}")
         } else if (entry.dateTimeLength == 2) {
             //val low = ByteUtil.asUINT8(dt.get(0)) and 0x1F
             val mhigh = ByteUtil.asUINT8(dt.get(0)) and 0xE0 shr 4
@@ -525,7 +528,10 @@ class MedtronicPumpHistoryDecoder @Inject constructor(
                 minutes = 59
                 seconds = 59
             }
-            entry.atechDateTime = DateTimeUtil.toATechDate(year, month, dayOfMonth, hour, minutes, seconds)
+            val atechdate = DateTimeUtil.toATechDate(year, month, dayOfMonth, hour, minutes, seconds)
+            aapsLogger.debug(LTag.PUMP, "ATECH CONVERSION 2:: Parsed datetime: $atechdate")
+            entry.utc(atechdate)
+            aapsLogger.debug(LTag.PUMP, "ATECH CONVERSION 2:: Converted datetime: ${entry.atechDateTime}")
         } else {
             aapsLogger.warn(LTag.PUMPBTCOMM, "Unknown datetime format: " + entry.dateTimeLength)
         }
