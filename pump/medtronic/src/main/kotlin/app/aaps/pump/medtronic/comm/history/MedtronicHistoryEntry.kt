@@ -35,27 +35,15 @@ abstract class MedtronicHistoryEntry : MedtronicHistoryEntryInterface {
     var atechDateTime: Long = 0L
         set(value) {
             field = value
-            // if (field != 0L || value == 0L) {
-            //     // Skip UTC conversion if this history entry already has a date set.
-            //     // This *should* mean that this field is being modified via subtraction or addition
-            //     field = value
-            // } else {
-            //     // pump history entry represented as UTC
-            //     val entryUTC = toLocalDateTime(value).toDateTime(DateTimeZone.UTC)
-            //
-            //     // phone's current timezone
-            //     val phoneTimeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-            //
-            //     // pump history entry in local time
-            //     val entryLocalTime: LocalDateTime = entryUTC.withZone(phoneTimeZone)
-            //         .toLocalDateTime()
-            //
-            //     field = DateTimeUtil.toATechDate(entryLocalTime)
-            // }
             dt = DateTimeUtil.toString(value)
             if (isEntryTypeSet() && value != 0L) pumpId = generatePumpId()
         }
 
+    /**
+     * Set this entry's `atechDateTime` value, converting from UTC to local time in the process.
+     *
+     * This is used for history entries read from the pump.
+     */
     fun utc(atechDateTime: Long) {
         // pump history entry represented as UTC
         val entryUTC = toLocalDateTime(atechDateTime).toDateTime(DateTimeZone.UTC)
@@ -69,26 +57,6 @@ abstract class MedtronicHistoryEntry : MedtronicHistoryEntryInterface {
 
         this.atechDateTime = DateTimeUtil.toATechDate(entryLocalTime)
     }
-
-    // /**
-    //  * Sets the value of this entry's `atechDateTime` without going through the UTC -> local time conversion
-    //  */
-    // fun overrideAtechDateTime(localAtechDateTime: Long) {
-    //     // The `atechDateTime` setter expects atechDateTime to be in UTC.
-    //     // This function converts the input `atechDateTime` to UTC, allowing us to call the setter function.
-    //
-    //     // phone's current timezone
-    //     val phoneTimeZone = DateTimeZone.forTimeZone(TimeZone.getDefault())
-    //
-    //     // pump history entry represented as local time
-    //     val entryLocalTime: DateTime = toLocalDateTime(localAtechDateTime).toDateTime(phoneTimeZone)
-    //
-    //     // pump history entry in UTC
-    //     val entryUTC: LocalDateTime = entryLocalTime.toDateTime(DateTimeZone.UTC)
-    //         .toLocalDateTime()
-    //
-    //     this.atechDateTime = DateTimeUtil.toATechDate(entryUTC)
-    // }
 
     @Expose
     var decodedData: MutableMap<String, Any> = mutableMapOf()
