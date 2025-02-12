@@ -71,8 +71,8 @@ class ConfigImpl @Inject constructor(
     private val enabledOptionsCache = mutableMapOf<ExternalOptions, Boolean>()
 
     override fun isEngineeringModeOrRelease(): Boolean = if (!APS) true else isEngineeringMode() || !isDev()
-    override fun isEngineeringMode(): Boolean = isEnabled(ExternalOptions.ENGINEERING_MODE)
-    override fun isDev(): Boolean = (VERSION.contains("-") || VERSION.matches(Regex(".*[a-zA-Z]+.*"))) && !VERSION.contains("-beta") && !VERSION.contains("-rc")
+    override fun isEngineeringMode(): Boolean = true
+    override fun isDev(): Boolean = true
     override fun isEnabled(option: ExternalOptions): Boolean =
         enabledOptionsCache.getOrPut(option) {
             fileListProvider.get().ensureExtraDirExists()?.findFile(option.filename) != null
