@@ -565,6 +565,8 @@ class MedtronicHistoryData(
     }
 
     private fun processTDDs(tddsIn: MutableList<PumpHistoryEntry>) {
+        // reversing so oldest entries are first. i don't exactly remember why i reversed this as well..
+        tddsIn.reverse()
         val tdds = filterTDDs(tddsIn)
 
         aapsLogger.debug(
@@ -600,6 +602,8 @@ class MedtronicHistoryData(
     }
 
     private fun processBolusEntries(entryList: MutableList<PumpHistoryEntry>) {
+        // reversing so oldest entries are first
+        entryList.reverse()
 
         val boluses = pumpSyncStorage.getBoluses()
 
@@ -1175,8 +1179,7 @@ class MedtronicHistoryData(
                 }
             }
             if (filtered2Items.isNotEmpty()) {
-                sort(filtered2Items)
-                filtered2Items.reverse()
+                sort(filtered2Items, reversed = true)
                 var i = 0
                 while (i < filtered2Items.size) {
                     val tbrProcess = TempBasalProcessDTO(
@@ -1386,8 +1389,9 @@ class MedtronicHistoryData(
     }
 
     // HELPER METHODS
-    private fun sort(list: MutableList<PumpHistoryEntry>) {
-        list.sortWith(PumpHistoryEntry.Comparator())
+    private fun sort(list: MutableList<PumpHistoryEntry>, reversed: Boolean = false) {
+        val comparator = if (reversed) PumpHistoryEntry.Comparator().reversed() else PumpHistoryEntry.Comparator()
+        list.sortWith(comparator)
     }
 
     private fun preProcessTBRs(tbrsInput: MutableList<PumpHistoryEntry>): MutableList<PumpHistoryEntry> {

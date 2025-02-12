@@ -271,10 +271,6 @@ class MedtronicCommunicationManager(
     }
 
     fun getPumpHistory(lastEntry: PumpHistoryEntry?, targetDate: LocalDateTime?): PumpHistoryResult {
-        // // UTC PATCH: Editing the pump history result's target date
-        // val pumpTotalResult = PumpHistoryResult(aapsLogger, lastEntry, if (targetDate == null) null else DateTimeUtil.toATechDate(targetDate.toDateTime().withZone(DateTimeZone.UTC).toLocalDateTime()))
-        // EDIT: the search date is handled in software actually? so the change above may be wrong.
-        // i was assuming the target date got sent to the pump when looking at history, but no.
         val pumpTotalResult = PumpHistoryResult(aapsLogger, lastEntry, if (targetDate == null) null else DateTimeUtil.toATechDate(targetDate))
         if (doWakeUpBeforeCommand) wakeUp(receiverDeviceAwakeForMinutes, false)
         aapsLogger.debug(LTag.PUMPCOMM, "Current command: " + medtronicUtil.getCurrentCommand())
