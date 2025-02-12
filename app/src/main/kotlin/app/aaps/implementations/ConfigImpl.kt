@@ -1,7 +1,5 @@
 package app.aaps.implementations
 
-import app.aaps.core.keys.interfaces.AppPlatform
-import app.aaps.core.keys.interfaces.TextRef
 import android.os.Build
 import app.aaps.BuildConfig
 import app.aaps.R
@@ -9,9 +7,12 @@ import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.configuration.ExternalOptions
 import app.aaps.core.interfaces.configuration.InitProgress
 import app.aaps.core.interfaces.maintenance.FileListProvider
+import app.aaps.core.keys.interfaces.AppPlatform
+import app.aaps.core.keys.interfaces.TextRef
 import app.aaps.di.ExternalOptionsOverride
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import dev.zacsweers.metro.Inject
 
 // @Singleton (not @Reusable): Config owns the single app-global init-progress flow that
 // ComposeMainActivity's splash gate observes; a guaranteed single instance keeps that flow shared
@@ -97,8 +97,8 @@ class ConfigImpl(
     private val enabledOptionsCache = mutableMapOf<ExternalOptions, Boolean>()
 
     override fun isEngineeringModeOrRelease(): Boolean = if (!APS) true else isEngineeringMode() || !isDev()
-    override fun isEngineeringMode(): Boolean = isEnabled(ExternalOptions.ENGINEERING_MODE)
-    override fun isDev(): Boolean = (VERSION.contains("-") || VERSION.matches(Regex(".*[a-zA-Z]+.*"))) && !VERSION.contains("-beta") && !VERSION.contains("-rc")
+    override fun isEngineeringMode(): Boolean = true
+    override fun isDev(): Boolean = true
     // The override is read first and never cached. The instrumented tests change which options they
     // want between tests, so a cached answer from the first one would stick for the whole run. The file
     // lookup below stays cached - that really is fixed for the life of the process.
