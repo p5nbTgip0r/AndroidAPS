@@ -36,7 +36,10 @@ class SyncPumpTemporaryBasalTransaction(
             val running = database.temporaryBasalDao.getTemporaryBasalActiveAtLegacy(temporaryBasal.timestamp)
             if (running != null && temporaryBasal.timestamp > running.timestamp) {
                 val old = running.copy()
-                running.end = temporaryBasal.timestamp
+                // fix for some database issue i was having
+                // probably wont be a problem in the future once old entries get cleared from pump history
+                running.end = temporaryBasal.timestamp+1
+                // running.end = temporaryBasal.timestamp
                 running.interfaceIDs.endId = temporaryBasal.interfaceIDs.pumpId
                 database.temporaryBasalDao.updateExistingEntry(running)
                 result.updated.add(Pair(old, running))
