@@ -458,15 +458,6 @@ class MainApp : Application(), HasAndroidInjector, Configuration.Provider {
     }
 
     private fun postSetupNotifications() {
-        // Identification not set (dev builds only)
-        if (config.isDev() && preferences.get(StringKey.MaintenanceIdentification).isBlank())
-            notificationManager.post(
-                id = NotificationId.IDENTIFICATION_NOT_SET,
-                R.string.identification_not_set,
-                level = NotificationLevel.INFO,
-                actions = listOf(NotificationAction(R.string.set) {}),
-                validityCheck = { config.isDev() && preferences.get(StringKey.MaintenanceIdentification).isBlank() }
-            )
         // Master password not set
         if (preferences.get(StringKey.ProtectionMasterPassword) == "")
             notificationManager.post(
