@@ -1,8 +1,5 @@
 package app.aaps.workflow
 
-import app.aaps.core.objects.workflow.WorkOutcome
-import kotlinx.coroutines.test.TestScope
-import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import app.aaps.core.data.model.CA
@@ -11,6 +8,7 @@ import app.aaps.core.interfaces.aps.AutosensData
 import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.Sensitivity
 import app.aaps.core.interfaces.concurrent.AapsLock
+import app.aaps.core.interfaces.constraints.ConstraintsChecker
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.nsclient.ProcessedDeviceStatusData
@@ -21,9 +19,11 @@ import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventBucketedDataCreated
 import app.aaps.core.interfaces.workflow.CalculationSignalsEmitter
 import app.aaps.core.interfaces.workflow.CalculationWorkflow.ProgressData
+import app.aaps.core.objects.workflow.WorkOutcome
 import app.aaps.shared.tests.TestBaseWithProfile
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,6 +50,7 @@ class PrepareGraphDataRunnerTest : TestBaseWithProfile() {
     @Mock lateinit var overviewData: OverviewData
     @Mock lateinit var signals: CalculationSignalsEmitter
     @Mock lateinit var workerParameters: WorkerParameters
+    @Mock lateinit var constraintChecker: ConstraintsChecker
 
     private val autosensDataProvider = { mock<AutosensData>() }
 
@@ -57,7 +58,7 @@ class PrepareGraphDataRunnerTest : TestBaseWithProfile() {
         PrepareGraphDataRunner(
             aapsLogger, workflowChainData, dateUtil, mockedRxBus, persistenceLayer,
             activePlugin, profileFunction, profileUtil, preferences, config, profiler, decimalFormatter,
-            processedDeviceStatusData, TestScope(), autosensDataProvider
+            processedDeviceStatusData, TestScope(), autosensDataProvider, constraintChecker
         )
 
     // The runner asks this between phases; nothing in these tests stops a run part way.
