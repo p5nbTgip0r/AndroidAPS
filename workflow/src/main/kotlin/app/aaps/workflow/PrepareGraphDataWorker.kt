@@ -14,6 +14,7 @@ import app.aaps.core.interfaces.aps.AutosensResult
 import app.aaps.core.interfaces.aps.IobTotal
 import app.aaps.core.interfaces.calibration.CalibrationContext
 import app.aaps.core.interfaces.configuration.Config
+import app.aaps.core.interfaces.constraints.ConstraintsChecker
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.logging.AAPSLogger
@@ -54,6 +55,7 @@ import app.aaps.core.interfaces.workflow.CalculationWorkflow
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.UnitDoubleKey
 import app.aaps.core.keys.interfaces.Preferences
+import app.aaps.core.objects.constraints.ConstraintObject
 import app.aaps.core.objects.extensions.combine
 import app.aaps.core.objects.workflow.LoggingWorker
 import app.aaps.workflow.iob.fromCarbs
@@ -95,7 +97,8 @@ class PrepareGraphDataWorker @AssistedInject constructor(
     private val rh: ResourceHelper,
     private val decimalFormatter: DecimalFormatter,
     private val processedDeviceStatusData: ProcessedDeviceStatusData,
-    private val autosensDataProvider: Provider<AutosensData>
+    private val autosensDataProvider: Provider<AutosensData>,
+    private val constraintChecker: ConstraintsChecker
 ) : LoggingWorker(context, params, Dispatchers.Default, aapsLogger, fabricPrivacy) {
 
     class PrepareGraphData(
@@ -395,7 +398,9 @@ class PrepareGraphDataWorker @AssistedInject constructor(
                     autosensData.type = "csf"
                 } else {
                     val currentBasal = profile.getBasal(bgTime)
-                    if (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9) {
+                    val uam = ConstraintObject(true, aapsLogger)
+                    constraintChecker.isUAMEnabled(uam)
+                    if (uam.value() && (iob.iob > 2 * currentBasal || autosensData.uam || autosensData.mealStartCounter < 9)) {
                         autosensData.mealStartCounter++
                         autosensData.uam = deviation > 0
                         autosensData.type = "uam"
