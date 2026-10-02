@@ -30,9 +30,9 @@ interface HardLimits {
         // temp target — the highest value the range allows — and it converts to 180.16 mg/dL. With a
         // flat 180.0 the watch rejects that temp target and the loop clamps the bottom value to 180.00
         // and warns on every run.
-        val LIMIT_TEMP_MIN_BG = 72.0..180.16
+        val LIMIT_TEMP_MIN_BG = 72.0..270.0
         val LIMIT_TEMP_MAX_BG = 72.0..270.0
-        val LIMIT_TEMP_TARGET_BG = 72.0..200.0
+        val LIMIT_TEMP_TARGET_BG = 72.0..270.0
         val LIMIT_DIA = mapOf(
             AgeType.CHILD to 5.0..9.0,
             AgeType.TEENAGE to 5.0..9.0,
