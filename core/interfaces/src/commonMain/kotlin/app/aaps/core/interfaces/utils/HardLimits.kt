@@ -22,7 +22,7 @@ interface HardLimits {
         // or even the raw 180.16) makes the loop clamp a valid 10.0 mmol low target and warn every run.
         // (The temp-target low path is checked UNROUNDED, so LIMIT_TEMP_MIN_BG only needs 180.16.)
         val LIMIT_MIN_BG = 80.0..180.2
-        val LIMIT_MAX_BG = 90.0..200.0
+        val LIMIT_MAX_BG = 85.0..200.0
         val LIMIT_TARGET_BG = 80.0..200.0
 
         // Very Hard Limits Ranges for Temp Targets [mg/dL]
@@ -48,7 +48,7 @@ interface HardLimits {
             AgeType.RESISTANT_ADULT to 2.0..100.0,
             AgeType.PREGNANT to 0.3..100.0
         )
-        val LIMIT_ISF = 2.0..1000.0 // mgdl
+        val LIMIT_ISF = 2.0..1620.0 // mgdl
         val MAX_IOB_AMA = mapOf(
             AgeType.CHILD to 3.0,
             AgeType.TEENAGE to 5.0,
